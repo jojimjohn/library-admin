@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  library-admin:
+    build: .
+    container_name: library-admin
+    restart: unless-stopped
+    environment:
+      # Database connection
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-library_bot}
+      - DB_USER=${DB_USER:-library_user}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+      # Evolution API
+      - EVOLUTION_API_URL=${EVOLUTION_API_URL:-https://api.ptcau.com}
+      - EVOLUTION_API_KEY=${EVOLUTION_API_KEY}
+      - EVOLUTION_INSTANCE=${EVOLUTION_INSTANCE:-ptc}
+
+      # Admin credentials
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+
+      # App configuration
+      - TIMEZONE=${TIMEZONE:-Asia/Kolkata}
+
+    networks:
+      - dokploy-network
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.library-admin.rule=Host(`${DOMAIN}`) && PathPrefix(`/library/admin`)"
+      - "traefik.http.routers.library-admin.entrypoints=websecure"
+      - "traefik.http.routers.library-admin.tls=true"
+      - "traefik.http.routers.library-admin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.library-admin.loadbalancer.server.port=3000"
+      # Middleware to strip /library/admin prefix
+      - "traefik.http.middlewares.library-admin-strip.stripprefix.prefixes=/library/admin"
+      - "traefik.http.routers.library-admin.middlewares=library-admin-strip"
+
+networks:
+  dokploy-network:
+    external: true
