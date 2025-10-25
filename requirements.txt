@@ -1,0 +1,16 @@
+# PTC Library Admin Dashboard - Python Dependencies
+
+# Core framework
+reflex==0.4.5
+
+# Database
+psycopg2-binary==2.9.9
+
+# Environment variables
+python-dotenv==1.0.0
+
+# HTTP requests (for Evolution API)
+requests==2.31.0
+
+# Date/time utilities
+python-dateutil==2.8.2
