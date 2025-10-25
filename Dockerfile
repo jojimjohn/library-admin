@@ -15,6 +15,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 
 WORKDIR /app
 
+
+# Install unzip (and optionally curl/wget if your build will need it)
+RUN apt-get update && apt-get install -y unzip
+
+
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
