@@ -28,7 +28,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Initialize Reflex (creates .web directory)
-RUN reflex init
+RUN reflex init --yes --template=blank
 
 # Export the frontend (creates optimized production build)
 RUN reflex export --frontend-only --no-zip
