@@ -179,7 +179,6 @@ def book_form_dialog() -> rx.Component:
             ),
         ),
         open=State.book_form_mode != "",
-        on_open_change=lambda is_open: State.close_book_form() if not is_open else None,
     )
 
 
