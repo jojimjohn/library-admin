@@ -37,6 +37,9 @@ services:
       - "traefik.http.routers.library-admin.tls=true"
       - "traefik.http.routers.library-admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.library-admin.loadbalancer.server.port=3000"
+      - "traefik.http.routers.library-admin-websockets.rule=Host(`${DOMAIN}`) && PathPrefix(`/ws`)"
+      - "traefik.http.routers.library-admin-websockets.entrypoints=websecure"
+      - "traefik.http.services.library-admin-websockets.loadbalancer.server.port=3000"
 
 networks:
   dokploy-network:
