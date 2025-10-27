@@ -1,80 +1,54 @@
-# Multi-stage build for PTC Library Admin Dashboard
-FROM python:3.11-slim as builder
+# PTC Library Admin Dashboard - Simplified Dockerfile
+FROM python:3.11-slim
 
-# Set locale environment variables
-ENV LANG=C.UTF-8
-ENV LC_ALL=C.UTF-8
-ENV PYTHONIOENCODING=UTF-8
+# Set environment variables
+ENV LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONIOENCODING=UTF-8 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    REFLEX_ENV=prod
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Node.js (required for Reflex frontend)
+# Install Node.js 20.x (required for Reflex)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
+# Upgrade pip and install Reflex
+RUN pip install --upgrade pip && \
+    pip install "reflex==0.8.16"
 
-# Install unzip (and optionally curl/wget if your build will need it)
-RUN apt-get update && apt-get install -y unzip
-
-# Create a non-root user and group
-RUN adduser --disabled-password --home /app reflex
-
-# Ensure the reflex user owns the working directory
-RUN chown -R reflex:reflex /app
-
-RUN pip install --upgrade pip
-
-RUN pip uninstall -y reflex && pip install "reflex==0.8.16"
-
-# Copy requirements and install Python dependencies
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
 
-# ...
+# Create non-root user
+RUN adduser --disabled-password --no-create-home reflex && \
+    chown -R reflex:reflex /app
+
+# Switch to non-root user
 USER reflex
-
-# Manually create the reflex.json file to avoid template fetching
-RUN echo '{"app_name": "app_name", "app_version": "0.8.16", "frontend_port": 3000, "telemetry_enabled": false}' > reflex.json
-
-# Export the frontend (creates optimized production build)
-RUN reflex export --frontend-only --no-zip
-
-# Production stage
-FROM python:3.11-slim
-
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y \
-    libpq5 \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Node.js for production
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Copy Python dependencies from builder
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
-
-# Copy application code and built frontend
-COPY --from=builder /app .
 
 # Expose ports
 EXPOSE 3000 8000
 
-# Run the application in production mode
-CMD ["reflex", "run", "--env", "prod", "--backend-only"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:3000/ || exit 1
+
+# Run Reflex in production mode
+CMD ["reflex", "run", "--env", "prod", "--loglevel", "info"]
