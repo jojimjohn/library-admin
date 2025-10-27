@@ -25,6 +25,8 @@ RUN adduser --disabled-password --home /app reflex
 # Ensure the reflex user owns the working directory
 RUN chown -R reflex:reflex /app
 
+RUN pip install --upgrade pip
+
 RUN pip uninstall -y reflex && pip install "reflex==0.8.16"
 
 # Copy requirements and install Python dependencies
