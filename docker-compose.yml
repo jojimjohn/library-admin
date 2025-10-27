@@ -29,14 +29,11 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.library-admin.rule=Host(`${DOMAIN}`) && PathPrefix(`/library/admin`)"
+      - "traefik.http.routers.library-admin.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.library-admin.entrypoints=websecure"
       - "traefik.http.routers.library-admin.tls=true"
       - "traefik.http.routers.library-admin.tls.certresolver=letsencrypt"
       - "traefik.http.services.library-admin.loadbalancer.server.port=3000"
-      # Middleware to strip /library/admin prefix
-      - "traefik.http.middlewares.library-admin-strip.stripprefix.prefixes=/library/admin"
-      - "traefik.http.routers.library-admin.middlewares=library-admin-strip"
 
 networks:
   dokploy-network:
