@@ -43,6 +43,9 @@ RUN adduser --disabled-password --no-create-home reflex && \
 # Switch to non-root user
 USER reflex
 
+# Set home directory to /app (reflex needs to write config files)
+ENV HOME=/app
+
 # Expose ports
 EXPOSE 3000 8000
 
