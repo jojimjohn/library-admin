@@ -41,11 +41,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+# ...
 USER reflex
-RUN reflex init --template blank
 
-# Initialize Reflex (creates .web directory)
-#RUN reflex init
+# Manually create the reflex.json file to avoid template fetching
+RUN echo '{"app_name": "app_name", "app_version": "0.8.16", "frontend_port": 3000, "telemetry_enabled": false}' > reflex.json
 
 # Export the frontend (creates optimized production build)
 RUN reflex export --frontend-only --no-zip
