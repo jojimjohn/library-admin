@@ -27,6 +27,11 @@ class State(rx.State):
     book_filter_genre: str = "all"
     genres: List[str] = []
 
+    @rx.var
+    def genres_with_all(self) -> List[str]:
+        """Get genres list with 'all' option prepended."""
+        return ["all"] + self.genres
+
     # Book form
     book_form_mode: str = ""  # "add" or "edit"
     book_form_id: str = ""

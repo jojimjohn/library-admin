@@ -211,7 +211,7 @@ def books_filters() -> rx.Component:
                 width="100%",
             ),
             rx.select(
-                ["all"] + State.genres,
+                State.genres_with_all,
                 placeholder="Genre",
                 value=State.book_filter_genre,
                 on_change=State.set_book_filter_genre,
