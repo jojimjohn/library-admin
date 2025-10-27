@@ -32,14 +32,20 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.library-admin.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.library-admin.entrypoints=websecure"
-      - "traefik.http.routers.library-admin.tls=true"
-      - "traefik.http.routers.library-admin.tls.certresolver=letsencrypt"
-      - "traefik.http.services.library-admin.loadbalancer.server.port=3000"
-      - "traefik.http.routers.library-admin-websockets.rule=Host(`${DOMAIN}`) && PathPrefix(`/ws`)"
-      - "traefik.http.routers.library-admin-websockets.entrypoints=websecure"
-      - "traefik.http.services.library-admin-websockets.loadbalancer.server.port=3000"
+      # Frontend (static files) - port 3000
+      - "traefik.http.routers.library-admin-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.library-admin-frontend.entrypoints=websecure"
+      - "traefik.http.routers.library-admin-frontend.tls=true"
+      - "traefik.http.routers.library-admin-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.library-admin-frontend.priority=1"
+      - "traefik.http.services.library-admin-frontend.loadbalancer.server.port=3000"
+      # Backend API (WebSocket & API) - port 8000
+      - "traefik.http.routers.library-admin-backend.rule=Host(`${DOMAIN}`) && (PathPrefix(`/_event`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.library-admin-backend.entrypoints=websecure"
+      - "traefik.http.routers.library-admin-backend.tls=true"
+      - "traefik.http.routers.library-admin-backend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.library-admin-backend.priority=10"
+      - "traefik.http.services.library-admin-backend.loadbalancer.server.port=8000"
 
 networks:
   dokploy-network:
