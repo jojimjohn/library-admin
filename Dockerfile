@@ -4,6 +4,7 @@ FROM python:3.11-slim as builder
 # Set locale environment variables
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
+ENV PYTHONIOENCODING=UTF-8
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
