@@ -6,6 +6,9 @@ services:
     container_name: library-admin
     restart: unless-stopped
     environment:
+      # Domain (required for API URL)
+      - DOMAIN=${DOMAIN:-library.ptcau.com}
+
       # Database connection
       - DB_HOST=${DB_HOST:-postgres}
       - DB_PORT=${DB_PORT:-5432}
