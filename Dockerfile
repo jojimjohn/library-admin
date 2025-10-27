@@ -19,6 +19,11 @@ WORKDIR /app
 # Install unzip (and optionally curl/wget if your build will need it)
 RUN apt-get update && apt-get install -y unzip
 
+# Create a non-root user and group
+RUN adduser --disabled-password --home /app reflex
+
+# Ensure the reflex user owns the working directory
+RUN chown -R reflex:reflex /app
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
@@ -27,8 +32,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
+USER reflex
+RUN reflex init --template blank
+
 # Initialize Reflex (creates .web directory)
-RUN echo "blank" | reflex init
+#RUN reflex init
 
 # Export the frontend (creates optimized production build)
 RUN reflex export --frontend-only --no-zip
