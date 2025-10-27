@@ -1,7 +1,8 @@
 # PTC Library Admin Dashboard - Python Dependencies
 
 # Core framework
-RUN pip install "reflex==0.8.16"
+#RUN pip uninstall -y reflex && pip install "reflex==0.8.16"
+
 
 # Database
 psycopg2-binary==2.9.9
