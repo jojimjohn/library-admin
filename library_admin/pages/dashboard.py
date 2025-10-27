@@ -34,7 +34,7 @@ def dashboard_stats() -> rx.Component:
             stat_card(
                 "Available",
                 State.dashboard_stats.get("available_books", 0).to(str),
-                "check-circle",
+                "circle-check",
                 "green"
             ),
             stat_card(
@@ -52,7 +52,7 @@ def dashboard_stats() -> rx.Component:
             stat_card(
                 "Overdue",
                 State.dashboard_stats.get("overdue_books", 0).to(str),
-                "alert-circle",
+                "circle-alert",
                 "red"
             ),
             stat_card(
@@ -93,7 +93,7 @@ def dashboard_page() -> rx.Component:
                 State.error_message != "",
                 rx.callout(
                     State.error_message,
-                    icon="alert-circle",
+                    icon="circle-alert",
                     color_scheme="red",
                     role="alert",
                 ),

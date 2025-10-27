@@ -114,7 +114,7 @@ def book_form_dialog() -> rx.Component:
                     State.book_form_error != "",
                     rx.callout(
                         State.book_form_error,
-                        icon="alert-circle",
+                        icon="circle-alert",
                         color_scheme="red",
                         role="alert",
                     ),
@@ -272,7 +272,7 @@ def books_page() -> rx.Component:
                 State.success_message != "",
                 rx.callout(
                     State.success_message,
-                    icon="check-circle",
+                    icon="circle-check",
                     color_scheme="green",
                     role="status",
                     on_click=State.clear_messages,
@@ -284,7 +284,7 @@ def books_page() -> rx.Component:
                 State.error_message != "",
                 rx.callout(
                     State.error_message,
-                    icon="alert-circle",
+                    icon="circle-alert",
                     color_scheme="red",
                     role="alert",
                     on_click=State.clear_messages,

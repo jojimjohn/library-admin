@@ -19,7 +19,7 @@ def login_page() -> rx.Component:
                     State.auth_error != "",
                     rx.callout(
                         State.auth_error,
-                        icon="alert-circle",
+                        icon="circle-alert",
                         color_scheme="red",
                         role="alert",
                     ),
@@ -115,7 +115,7 @@ def bottom_navigation() -> rx.Component:
                 ),
                 flex="1",
             ),
-            justify="around",
+            justify="between",
             align="center",
             padding="3",
         ),
