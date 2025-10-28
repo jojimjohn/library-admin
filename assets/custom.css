@@ -1,0 +1,28 @@
+/* Hide Reflex badge/logo completely */
+[data-radix-toast-viewport],
+[class*="reflex-badge"],
+[class*="Reflex"],
+a[href*="reflex.dev"],
+a[href*="Built with Reflex"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Target the floating Reflex badge specifically (small, bottom-right, with link) */
+div[style*="position: fixed"][style*="bottom"][style*="right"][style*="z-index"] > a[href*="reflex"],
+div[style*="position:fixed"][style*="bottom"][style*="right"] > a {
+    display: none !important;
+}
+
+/* Hide small fixed badges in bottom right corner */
+div[style*="right: 1rem"][style*="bottom: 1rem"],
+div[style*="right:1rem"][style*="bottom:1rem"] {
+    display: none !important;
+}
+
+/* Target parent containers of reflex badges */
+div:has(> a[href*="reflex"]) {
+    display: none !important;
+}
