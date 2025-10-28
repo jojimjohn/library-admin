@@ -36,13 +36,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Create non-root user
-RUN adduser --disabled-password --no-create-home reflex && \
-    chown -R reflex:reflex /app
-
-# Switch to non-root user
-USER reflex
-
 # Set home directory to /app (reflex needs to write config files)
 ENV HOME=/app
 
