@@ -16,29 +16,22 @@ from typing import Dict
 
 
 def genre_card_modern(genre: Dict) -> rx.Component:
-    """Modern genre card with gradient."""
-    return gradient_card(
+    """Modern genre card - clean design."""
+    return list_item_modern(
         rx.vstack(
             # Genre name and book count
             rx.hstack(
                 rx.text(
                     genre["genre_name"],
-                    size="5",
+                    size="4",
                     weight="bold",
-                    color=Colors.white,
+                    color=Colors.dark_navy,
                 ),
                 rx.spacer(),
-                rx.box(
-                    rx.text(
-                        f"{genre['book_count']} books",
-                        size="2",
-                        weight="medium",
-                        color=Colors.white,
-                    ),
-                    background="rgba(255, 255, 255, 0.2)",
-                    border_radius="12px",
-                    padding_x="3",
-                    padding_y="1",
+                rx.badge(
+                    f"{genre['book_count']} books",
+                    color_scheme="blue",
+                    size="2",
                 ),
                 width="100%",
                 align="center",
@@ -50,8 +43,7 @@ def genre_card_modern(genre: Dict) -> rx.Component:
                 rx.text(
                     genre["description"],
                     size="2",
-                    color=Colors.white,
-                    opacity="0.9",
+                    color=Colors.dark_gray,
                 ),
             ),
 
@@ -63,9 +55,7 @@ def genre_card_modern(genre: Dict) -> rx.Component:
                     on_click=lambda: State.open_edit_genre_form(genre["genre_id"]),
                     variant="soft",
                     size="2",
-                    background="rgba(255, 255, 255, 0.2)",
-                    color=Colors.white,
-                    _hover={"background": "rgba(255, 255, 255, 0.3)"},
+                    color_scheme="blue",
                 ),
                 rx.cond(
                     genre["book_count"] == 0,
@@ -89,11 +79,10 @@ def genre_card_modern(genre: Dict) -> rx.Component:
                 spacing="2",
             ),
 
-            spacing="3",
+            spacing="2",
             align="start",
             width="100%",
         ),
-        gradient=Gradients.light_blue_gradient,
         margin_bottom="3",
     )
 

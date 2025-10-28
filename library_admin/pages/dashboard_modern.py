@@ -54,7 +54,7 @@ def stats_grid_modern() -> rx.Component:
                 gradient=Gradients.mint_gradient,
             ),
             columns="2",
-            spacing="3",
+            spacing="4",
             width="100%",
         ),
 
@@ -73,7 +73,7 @@ def stats_grid_modern() -> rx.Component:
                 gradient=Gradients.navy_gradient,
             ),
             columns="2",
-            spacing="3",
+            spacing="4",
             width="100%",
         ),
 
@@ -92,11 +92,11 @@ def stats_grid_modern() -> rx.Component:
                 gradient=f"linear-gradient(135deg, {Colors.warning_orange} 0%, #F57C00 100%)",
             ),
             columns="2",
-            spacing="3",
+            spacing="4",
             width="100%",
         ),
 
-        spacing="3",
+        spacing="4",
         width="100%",
     )
 
@@ -135,7 +135,7 @@ def quick_actions_modern() -> rx.Component:
                 gradient=Gradients.coral_gradient,
             ),
             columns="2",
-            spacing="3",
+            spacing="4",
             width="100%",
         ),
 

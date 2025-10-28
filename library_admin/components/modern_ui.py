@@ -109,29 +109,41 @@ def stat_card_modern(
     """
     return gradient_card(
         rx.vstack(
-            # Icon
+            # Icon (centered)
             rx.box(
                 rx.icon(icon, size=32, color=icon_color),
-                margin_bottom="2",
+                display="flex",
+                justify_content="center",
+                width="100%",
             ),
-            # Title
-            rx.text(
-                title,
-                size="2",
-                weight="medium",
-                color=text_color,
-                opacity="0.9",
+            # Title (centered)
+            rx.box(
+                rx.text(
+                    title,
+                    size="2",
+                    weight="medium",
+                    color=text_color,
+                    opacity="0.9",
+                ),
+                text_align="center",
+                width="100%",
             ),
-            # Value
-            rx.text(
-                value,
-                size="8",
-                weight="bold",
-                color=text_color,
+            # Value (centered)
+            rx.box(
+                rx.text(
+                    value,
+                    size="8",
+                    weight="bold",
+                    color=text_color,
+                ),
+                text_align="center",
+                width="100%",
             ),
-            spacing="1",
-            align="start",
+            spacing="2",
+            align="center",
+            justify="center",
             width="100%",
+            height="100%",
         ),
         gradient=gradient,
         min_height="140px",
@@ -414,14 +426,21 @@ def modern_page_container(
         children: Page content
     """
     return rx.box(
-        rx.vstack(
-            *children,
-            spacing="4",
+        rx.box(
+            rx.vstack(
+                *children,
+                spacing="4",
+                width="100%",
+            ),
+            max_width="800px",
             width="100%",
+            margin="0 auto",  # Center the content
         ),
         background=Colors.white,  # Changed from light_gray to white for better contrast
         min_height="100vh",
         padding="4",
+        padding_left="3",  # Left margin
+        padding_right="3",  # Right margin
         padding_bottom="100px",  # Space for bottom nav
         **props
     )
