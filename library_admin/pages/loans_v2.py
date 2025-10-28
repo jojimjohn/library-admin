@@ -83,7 +83,7 @@ def compact_search_bar() -> rx.Component:
         rx.hstack(
             rx.badge(
                 "All",
-                variant="solid" if State.loan_filter_status == "all" else "soft",
+                variant=rx.cond(State.loan_filter_status == "all", "solid", "soft"),
                 color_scheme="blue",
                 on_click=lambda: State.set_loan_filter_status("all"),
                 cursor="pointer",
@@ -91,7 +91,7 @@ def compact_search_bar() -> rx.Component:
             ),
             rx.badge(
                 "OK",
-                variant="solid" if State.loan_filter_status == "ok" else "soft",
+                variant=rx.cond(State.loan_filter_status == "ok", "solid", "soft"),
                 color_scheme="green",
                 on_click=lambda: State.set_loan_filter_status("ok"),
                 cursor="pointer",
@@ -99,7 +99,7 @@ def compact_search_bar() -> rx.Component:
             ),
             rx.badge(
                 "Due Soon",
-                variant="solid" if State.loan_filter_status == "due_soon" else "soft",
+                variant=rx.cond(State.loan_filter_status == "due_soon", "solid", "soft"),
                 color_scheme="yellow",
                 on_click=lambda: State.set_loan_filter_status("due_soon"),
                 cursor="pointer",
@@ -107,7 +107,7 @@ def compact_search_bar() -> rx.Component:
             ),
             rx.badge(
                 "Overdue",
-                variant="solid" if State.loan_filter_status == "overdue" else "soft",
+                variant=rx.cond(State.loan_filter_status == "overdue", "solid", "soft"),
                 color_scheme="red",
                 on_click=lambda: State.set_loan_filter_status("overdue"),
                 cursor="pointer",

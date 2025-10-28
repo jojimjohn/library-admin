@@ -185,11 +185,16 @@ def compact_filters() -> rx.Component:
 
         rx.hstack(
             # Status filter
-            rx.badge("All", variant="solid" if State.book_filter_status == "all" else "soft",
+            rx.badge("All",
+                    variant=rx.cond(State.book_filter_status == "all", "solid", "soft"),
                     on_click=lambda: State.set_book_filter_status("all"), cursor="pointer", size="1"),
-            rx.badge("Available", variant="solid" if State.book_filter_status == "available" else "soft", color_scheme="green",
+            rx.badge("Available",
+                    variant=rx.cond(State.book_filter_status == "available", "solid", "soft"),
+                    color_scheme="green",
                     on_click=lambda: State.set_book_filter_status("available"), cursor="pointer", size="1"),
-            rx.badge("Borrowed", variant="solid" if State.book_filter_status == "borrowed" else "soft", color_scheme="orange",
+            rx.badge("Borrowed",
+                    variant=rx.cond(State.book_filter_status == "borrowed", "solid", "soft"),
+                    color_scheme="orange",
                     on_click=lambda: State.set_book_filter_status("borrowed"), cursor="pointer", size="1"),
             spacing="2",
         ),
