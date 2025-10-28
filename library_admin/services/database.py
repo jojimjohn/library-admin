@@ -489,3 +489,215 @@ class DatabaseService:
         finally:
             cursor.close()
             conn.close()
+
+    # ===== SETTINGS =====
+
+    @staticmethod
+    def get_all_settings() -> List[Dict]:
+        """Get all settings."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT setting_key, setting_value, description, updated_at
+                FROM settings
+                ORDER BY setting_key
+            """)
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def get_setting(key: str) -> Optional[str]:
+        """Get a single setting value."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("SELECT setting_value FROM settings WHERE setting_key = %s", (key,))
+            result = cursor.fetchone()
+            return result['setting_value'] if result else None
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def update_setting(key: str, value: str) -> bool:
+        """Update a setting value."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                UPDATE settings
+                SET setting_value = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE setting_key = %s
+            """, (value, key))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            conn.rollback()
+            print(f"Error updating setting: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
+    # ===== MESSAGE TEMPLATES =====
+
+    @staticmethod
+    def get_all_templates() -> List[Dict]:
+        """Get all message templates."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT template_id, template_name, template_type, message_content,
+                       description, is_active, created_at, updated_at
+                FROM message_templates
+                ORDER BY template_type, template_name
+            """)
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def get_template_by_name(template_name: str) -> Optional[Dict]:
+        """Get a template by name."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT template_id, template_name, template_type, message_content,
+                       description, is_active
+                FROM message_templates
+                WHERE template_name = %s AND is_active = true
+            """, (template_name,))
+            return cursor.fetchone()
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def add_template(template_name: str, template_type: str, message_content: str,
+                    description: str = "") -> bool:
+        """Add a new message template."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                INSERT INTO message_templates (template_name, template_type, message_content, description)
+                VALUES (%s, %s, %s, %s)
+            """, (template_name, template_type, message_content, description))
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            print(f"Error adding template: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def update_template(template_id: int, template_name: str, template_type: str,
+                       message_content: str, description: str = "") -> bool:
+        """Update a message template."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                UPDATE message_templates
+                SET template_name = %s, template_type = %s, message_content = %s,
+                    description = %s, updated_at = CURRENT_TIMESTAMP
+                WHERE template_id = %s
+            """, (template_name, template_type, message_content, description, template_id))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            conn.rollback()
+            print(f"Error updating template: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def delete_template(template_id: int) -> bool:
+        """Delete a message template."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("DELETE FROM message_templates WHERE template_id = %s", (template_id,))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            conn.rollback()
+            print(f"Error deleting template: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def get_users_with_overdue_books() -> List[Dict]:
+        """Get all users who have overdue books."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT DISTINCT
+                    u.user_id,
+                    u.name,
+                    COUNT(l.loan_id) as overdue_count
+                FROM users u
+                JOIN loans l ON u.user_id = l.user_id
+                WHERE l.return_date IS NULL
+                  AND (l.borrow_date + (
+                      SELECT setting_value::INTEGER FROM settings WHERE setting_key = 'loan_due_days'
+                  ) || ' days')::INTERVAL < CURRENT_DATE
+                GROUP BY u.user_id, u.name
+                ORDER BY overdue_count DESC
+            """)
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def get_users_with_due_soon_books() -> List[Dict]:
+        """Get all users who have books due soon."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT DISTINCT
+                    u.user_id,
+                    u.name,
+                    COUNT(l.loan_id) as due_soon_count
+                FROM users u
+                JOIN loans l ON u.user_id = l.user_id
+                WHERE l.return_date IS NULL
+                  AND (l.borrow_date + (
+                      SELECT setting_value::INTEGER FROM settings WHERE setting_key = 'loan_due_days'
+                  ) || ' days')::INTERVAL
+                  BETWEEN CURRENT_DATE AND CURRENT_DATE + (
+                      SELECT setting_value::INTEGER FROM settings WHERE setting_key = 'reminder_days_before'
+                  ) || ' days')::INTERVAL
+                GROUP BY u.user_id, u.name
+                ORDER BY due_soon_count DESC
+            """)
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.close()

@@ -77,6 +77,26 @@ class State(rx.State):
         """Get formatted user options for select dropdown."""
         return [f"{u.get('name', 'Unknown')} ({u.get('user_id', '')})" for u in self.users]
 
+    # Settings
+    setting_whatsapp_group_id: str = ""
+    setting_loan_due_days: str = "14"
+    setting_reminder_days_before: str = "2"
+    setting_overdue_alert_days_after: str = "1"
+
+    # Message Templates
+    templates: List[Dict] = []
+    template_form_mode: str = ""  # "add" or "edit"
+    template_form_id: int = 0
+    template_form_name: str = ""
+    template_form_type: str = ""
+    template_form_content: str = ""
+    template_form_description: str = ""
+    template_form_error: str = ""
+
+    # Targeted notifications
+    overdue_users_count: int = 0
+    due_soon_users_count: int = 0
+
     # Loading states
     is_loading: bool = False
     loading_message: str = ""
@@ -693,6 +713,316 @@ Come and borrow it today! 📚✨"""
         except Exception as e:
             self.evolution_api_status = "disconnected"
             self.evolution_api_error = f"Error: {str(e)}"
+
+    # ===== SETTINGS =====
+
+    def load_settings(self):
+        """Load all settings."""
+        self.is_loading = True
+        try:
+            settings = DatabaseService.get_all_settings()
+            for setting in settings:
+                key = setting['setting_key']
+                value = setting['setting_value']
+                if key == 'whatsapp_group_id':
+                    self.setting_whatsapp_group_id = value
+                elif key == 'loan_due_days':
+                    self.setting_loan_due_days = value
+                elif key == 'reminder_days_before':
+                    self.setting_reminder_days_before = value
+                elif key == 'overdue_alert_days_after':
+                    self.setting_overdue_alert_days_after = value
+
+            # Load counts for targeted notifications
+            overdue_users = DatabaseService.get_users_with_overdue_books()
+            self.overdue_users_count = len(overdue_users)
+
+            due_soon_users = DatabaseService.get_users_with_due_soon_books()
+            self.due_soon_users_count = len(due_soon_users)
+
+            self.error_message = ""
+        except Exception as e:
+            self.error_message = f"Error loading settings: {str(e)}"
+        finally:
+            self.is_loading = False
+
+    def set_setting_whatsapp_group_id(self, value: str):
+        """Set WhatsApp group ID."""
+        self.setting_whatsapp_group_id = value
+
+    def set_setting_loan_due_days(self, value: str):
+        """Set loan due days."""
+        self.setting_loan_due_days = value
+
+    def set_setting_reminder_days_before(self, value: str):
+        """Set reminder days before."""
+        self.setting_reminder_days_before = value
+
+    def set_setting_overdue_alert_days_after(self, value: str):
+        """Set overdue alert days after."""
+        self.setting_overdue_alert_days_after = value
+
+    def save_settings(self):
+        """Save all settings."""
+        self.is_loading = True
+        try:
+            DatabaseService.update_setting('whatsapp_group_id', self.setting_whatsapp_group_id)
+            DatabaseService.update_setting('loan_due_days', self.setting_loan_due_days)
+            DatabaseService.update_setting('reminder_days_before', self.setting_reminder_days_before)
+            DatabaseService.update_setting('overdue_alert_days_after', self.setting_overdue_alert_days_after)
+
+            self.success_message = "Settings saved successfully"
+            self.error_message = ""
+        except Exception as e:
+            self.error_message = f"Error saving settings: {str(e)}"
+        finally:
+            self.is_loading = False
+
+    # ===== MESSAGE TEMPLATES =====
+
+    def load_templates(self):
+        """Load all message templates."""
+        self.is_loading = True
+        try:
+            self.templates = DatabaseService.get_all_templates()
+            self.error_message = ""
+        except Exception as e:
+            self.error_message = f"Error loading templates: {str(e)}"
+        finally:
+            self.is_loading = False
+
+    def open_add_template_form(self):
+        """Open add template form."""
+        self.template_form_mode = "add"
+        self.template_form_id = 0
+        self.template_form_name = ""
+        self.template_form_type = ""
+        self.template_form_content = ""
+        self.template_form_description = ""
+        self.template_form_error = ""
+
+    def open_edit_template_form(self, template_id: int):
+        """Open edit template form."""
+        for template in self.templates:
+            if template['template_id'] == template_id:
+                self.template_form_mode = "edit"
+                self.template_form_id = template_id
+                self.template_form_name = template['template_name']
+                self.template_form_type = template['template_type']
+                self.template_form_content = template['message_content']
+                self.template_form_description = template.get('description', '')
+                self.template_form_error = ""
+                break
+
+    def close_template_form(self):
+        """Close template form."""
+        self.template_form_mode = ""
+        self.template_form_error = ""
+
+    def set_template_form_name(self, value: str):
+        """Set template form name."""
+        self.template_form_name = value
+
+    def set_template_form_type(self, value: str):
+        """Set template form type."""
+        self.template_form_type = value
+
+    def set_template_form_content(self, value: str):
+        """Set template form content."""
+        self.template_form_content = value
+
+    def set_template_form_description(self, value: str):
+        """Set template form description."""
+        self.template_form_description = value
+
+    def save_template(self):
+        """Save message template."""
+        if not self.template_form_name or not self.template_form_type or not self.template_form_content:
+            self.template_form_error = "Name, type, and content are required"
+            return
+
+        self.is_loading = True
+        try:
+            if self.template_form_mode == "add":
+                success = DatabaseService.add_template(
+                    self.template_form_name,
+                    self.template_form_type,
+                    self.template_form_content,
+                    self.template_form_description
+                )
+                message = "Template added successfully"
+            else:  # edit
+                success = DatabaseService.update_template(
+                    self.template_form_id,
+                    self.template_form_name,
+                    self.template_form_type,
+                    self.template_form_content,
+                    self.template_form_description
+                )
+                message = "Template updated successfully"
+
+            if success:
+                self.success_message = message
+                self.close_template_form()
+                self.load_templates()
+            else:
+                self.template_form_error = "Failed to save template"
+
+        except Exception as e:
+            self.template_form_error = f"Error: {str(e)}"
+        finally:
+            self.is_loading = False
+
+    # ===== TARGETED NOTIFICATIONS =====
+
+    def send_overdue_alerts_bulk(self):
+        """Send alerts to all users with overdue books."""
+        from library_admin.services.notifications import NotificationService
+
+        self.is_loading = True
+        self.loading_message = "Sending overdue alerts..."
+
+        try:
+            overdue_users = DatabaseService.get_users_with_overdue_books()
+
+            if not overdue_users:
+                self.error_message = "No users with overdue books found"
+                return
+
+            # Get template
+            template = DatabaseService.get_template_by_name('overdue_alert')
+            if not template:
+                self.error_message = "Overdue alert template not found"
+                return
+
+            success_count = 0
+            for user in overdue_users:
+                user_id = user['user_id']
+                overdue_count = user['overdue_count']
+
+                # Get user's overdue loans
+                loans = DatabaseService.get_active_loans()
+                user_loans = [l for l in loans if l['user_id'] == user_id and l['status'] == 'overdue']
+
+                if user_loans:
+                    first_book = user_loans[0]
+                    message = template['message_content'].format(
+                        book_title=first_book['title'],
+                        days_overdue=abs(first_book['days_remaining'])
+                    )
+
+                    result = NotificationService.send_whatsapp_message(user_id, message)
+                    if result.get('success'):
+                        success_count += 1
+
+            self.success_message = f"Sent alerts to {success_count} of {len(overdue_users)} users"
+            self.load_settings()  # Reload counts
+
+        except Exception as e:
+            self.error_message = f"Error sending alerts: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    def send_due_soon_reminders_bulk(self):
+        """Send reminders to all users with books due soon."""
+        from library_admin.services.notifications import NotificationService
+
+        self.is_loading = True
+        self.loading_message = "Sending due soon reminders..."
+
+        try:
+            due_soon_users = DatabaseService.get_users_with_due_soon_books()
+
+            if not due_soon_users:
+                self.error_message = "No users with books due soon found"
+                return
+
+            # Get template
+            template = DatabaseService.get_template_by_name('due_reminder')
+            if not template:
+                self.error_message = "Due reminder template not found"
+                return
+
+            success_count = 0
+            for user in due_soon_users:
+                user_id = user['user_id']
+
+                # Get user's due soon loans
+                loans = DatabaseService.get_active_loans()
+                user_loans = [l for l in loans if l['user_id'] == user_id and l['status'] == 'due_soon']
+
+                if user_loans:
+                    first_book = user_loans[0]
+                    message = template['message_content'].format(
+                        book_title=first_book['title'],
+                        due_date=first_book['due_date']
+                    )
+
+                    result = NotificationService.send_whatsapp_message(user_id, message)
+                    if result.get('success'):
+                        success_count += 1
+
+            self.success_message = f"Sent reminders to {success_count} of {len(due_soon_users)} users"
+            self.load_settings()  # Reload counts
+
+        except Exception as e:
+            self.error_message = f"Error sending reminders: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    def send_notification_to_loan_user(self, user_id: str, book_title: str, loan_status: str):
+        """Send notification to a specific user about their loan."""
+        from library_admin.services.notifications import NotificationService
+
+        self.is_loading = True
+        self.loading_message = "Sending notification..."
+
+        try:
+            # Get appropriate template
+            template_name = 'overdue_alert' if loan_status == 'overdue' else 'due_reminder'
+            template = DatabaseService.get_template_by_name(template_name)
+
+            if not template:
+                self.error_message = f"Template '{template_name}' not found"
+                return
+
+            # Get loan details
+            loans = DatabaseService.get_active_loans()
+            user_loans = [l for l in loans if l['user_id'] == user_id and l['title'] == book_title]
+
+            if not user_loans:
+                self.error_message = "Loan not found"
+                return
+
+            loan = user_loans[0]
+
+            # Format message
+            if loan_status == 'overdue':
+                message = template['message_content'].format(
+                    book_title=loan['title'],
+                    days_overdue=abs(loan['days_remaining'])
+                )
+            else:
+                message = template['message_content'].format(
+                    book_title=loan['title'],
+                    due_date=loan['due_date']
+                )
+
+            # Send notification
+            result = NotificationService.send_whatsapp_message(user_id, message)
+
+            if result.get('success'):
+                self.success_message = f"Notification sent to {user_id}"
+            else:
+                self.error_message = result.get('error', 'Failed to send notification')
+
+        except Exception as e:
+            self.error_message = f"Error sending notification: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
 
     # ===== MESSAGES =====
 

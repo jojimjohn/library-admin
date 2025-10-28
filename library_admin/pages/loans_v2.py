@@ -19,7 +19,7 @@ def status_badge(status: str) -> rx.Component:
 
 
 def loan_row(loan: Dict) -> rx.Component:
-    """Compact loan row with all info."""
+    """Compact loan row with all info and notification button."""
     return rx.box(
         rx.hstack(
             # Status indicator (left edge)
@@ -54,6 +54,26 @@ def loan_row(loan: Dict) -> rx.Component:
 
                 spacing="1",
                 flex="1",
+            ),
+
+            # Quick notification button (right edge)
+            rx.cond(
+                loan["status"] != "ok",  # Only show button for overdue or due_soon
+                rx.icon_button(
+                    rx.icon("send", size=14),
+                    on_click=lambda: State.send_notification_to_loan_user(
+                        loan.get("user_id"),
+                        loan.get("title"),
+                        loan.get("status")
+                    ),
+                    size="1",
+                    variant="ghost",
+                    color_scheme=rx.cond(
+                        loan["status"] == "overdue",
+                        "red",
+                        "yellow"
+                    ),
+                ),
             ),
 
             spacing="2",

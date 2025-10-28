@@ -8,6 +8,7 @@ from library_admin.pages.loans_v2 import loans_page_v2
 from library_admin.pages.users import users_page
 from library_admin.pages.genres import genres_page
 from library_admin.pages.notifications import notifications_page
+from library_admin.pages.settings import settings_page
 
 
 def login_page() -> rx.Component:
@@ -62,24 +63,48 @@ def login_page() -> rx.Component:
 
 
 def navigation_bar() -> rx.Component:
-    """Top navigation bar."""
+    """Top navigation bar with improved design."""
     return rx.box(
         rx.hstack(
-            rx.heading("PTC Library", size="6"),
+            # Logo/Title area with icon
+            rx.hstack(
+                rx.icon("library", size=24, color=rx.color("blue", 11)),
+                rx.vstack(
+                    rx.heading("PTC Library", size="5", color=rx.color("blue", 11)),
+                    rx.text("Admin Dashboard", size="1", color="gray"),
+                    spacing="0",
+                    align="start",
+                ),
+                spacing="2",
+                align="center",
+            ),
             rx.spacer(),
-            rx.button(
-                rx.icon("log_out", size=18),
-                "Logout",
-                on_click=State.logout,
-                variant="soft",
-                size="2",
+            # Settings and Logout
+            rx.hstack(
+                rx.link(
+                    rx.icon_button(
+                        rx.icon("settings", size=18),
+                        variant="ghost",
+                        size="2",
+                    ),
+                    href="/settings",
+                ),
+                rx.button(
+                    rx.icon("log_out", size=18),
+                    "Logout",
+                    on_click=State.logout,
+                    variant="soft",
+                    size="2",
+                ),
+                spacing="2",
             ),
             width="100%",
             align="center",
-            padding="4",
+            padding="3",
         ),
         background_color=rx.color("gray", 2),
         border_bottom=f"1px solid {rx.color('gray', 6)}",
+        box_shadow="0 1px 3px 0 rgba(0, 0, 0, 0.1)",
     )
 
 
@@ -255,6 +280,19 @@ def notifications() -> rx.Component:
     return rx.cond(
         State.is_authenticated,
         main_layout(notifications_page()),
+        login_page(),
+    )
+
+
+
+
+@rx.page(route="/settings", on_load=[State.load_settings, State.load_templates])
+def settings() -> rx.Component:
+    """Settings page route."""
+    State.current_page = "settings"
+    return rx.cond(
+        State.is_authenticated,
+        main_layout(settings_page()),
         login_page(),
     )
 
