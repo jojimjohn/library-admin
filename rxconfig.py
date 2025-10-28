@@ -17,4 +17,5 @@ config = rx.Config(
     backend_host="0.0.0.0" if is_prod else "localhost",
     telemetry_enabled=False,
     disable_plugins=["reflex.plugins.sitemap.SitemapPlugin"],
+    overlay_component=None,  # Remove reflex badge icon
 )

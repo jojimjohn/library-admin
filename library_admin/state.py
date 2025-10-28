@@ -35,6 +35,7 @@ class State(rx.State):
     # Book form
     book_form_mode: str = ""  # "add" or "edit"
     book_form_id: str = ""
+    book_form_original_id: str = ""  # Store original ID for updates
     book_form_title: str = ""
     book_form_author: str = ""
     book_form_genre: str = ""
@@ -53,6 +54,23 @@ class State(rx.State):
     user_form_name: str = ""
     user_form_role: str = ""
     user_form_error: str = ""
+
+    # Genres
+    genres_list: List[Dict] = []
+    genre_form_mode: str = ""  # "add" or "edit"
+    genre_form_id: int = 0
+    genre_form_name: str = ""
+    genre_form_description: str = ""
+    genre_form_error: str = ""
+
+    # Notifications
+    notify_selected_user: str = ""
+    notify_phone_number: str = ""
+    notify_message: str = ""
+    notify_group_id: str = ""
+    notify_group_message: str = ""
+    evolution_api_status: str = ""  # "connected", "disconnected", "testing"
+    evolution_api_error: str = ""
 
     # Loading states
     is_loading: bool = False
@@ -171,6 +189,7 @@ class State(rx.State):
         if book:
             self.book_form_mode = "edit"
             self.book_form_id = book['book_id']
+            self.book_form_original_id = book['book_id']  # Store original ID
             self.book_form_title = book['title']
             self.book_form_author = book['author']
             self.book_form_genre = book['genre']
@@ -182,6 +201,7 @@ class State(rx.State):
         """Close book form."""
         self.book_form_mode = ""
         self.book_form_id = ""
+        self.book_form_original_id = ""
         self.book_form_title = ""
         self.book_form_author = ""
         self.book_form_genre = ""
@@ -223,11 +243,14 @@ class State(rx.State):
                 )
                 message = "Book added successfully"
             else:  # edit
+                # Pass new_book_id only if it changed
+                new_id = self.book_form_id if self.book_form_id != self.book_form_original_id else None
                 success = DatabaseService.update_book(
-                    self.book_form_id,
+                    self.book_form_original_id,  # Use original ID to find the book
                     self.book_form_title,
                     self.book_form_author,
-                    self.book_form_genre
+                    self.book_form_genre,
+                    new_book_id=new_id
                 )
                 message = "Book updated successfully"
 
@@ -400,6 +423,271 @@ class State(rx.State):
             self.user_form_error = f"Error: {str(e)}"
         finally:
             self.is_loading = False
+
+    # ===== GENRES =====
+
+    def load_genres_list(self):
+        """Load all genres with book counts."""
+        self.is_loading = True
+        self.loading_message = "Loading genres..."
+
+        try:
+            self.genres_list = DatabaseService.get_genres_with_counts()
+            self.error_message = ""
+        except Exception as e:
+            self.error_message = f"Error loading genres: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    def open_add_genre_form(self):
+        """Open add genre form."""
+        self.genre_form_mode = "add"
+        self.genre_form_id = 0
+        self.genre_form_name = ""
+        self.genre_form_description = ""
+        self.genre_form_error = ""
+
+    def open_edit_genre_form(self, genre_id: int):
+        """Open edit genre form."""
+        # Find the genre in the list
+        for genre in self.genres_list:
+            if genre['genre_id'] == genre_id:
+                self.genre_form_mode = "edit"
+                self.genre_form_id = genre_id
+                self.genre_form_name = genre['genre_name']
+                self.genre_form_description = genre.get('description', '')
+                self.genre_form_error = ""
+                break
+
+    def close_genre_form(self):
+        """Close genre form."""
+        self.genre_form_mode = ""
+        self.genre_form_id = 0
+        self.genre_form_name = ""
+        self.genre_form_description = ""
+        self.genre_form_error = ""
+
+    def set_genre_form_name(self, value: str):
+        """Set genre form name."""
+        self.genre_form_name = value
+
+    def set_genre_form_description(self, value: str):
+        """Set genre form description."""
+        self.genre_form_description = value
+
+    def save_genre(self):
+        """Save genre (add or update)."""
+        if not self.genre_form_name:
+            self.genre_form_error = "Genre name is required"
+            return
+
+        self.is_loading = True
+        self.loading_message = "Saving genre..."
+
+        try:
+            if self.genre_form_mode == "add":
+                success = DatabaseService.add_genre(
+                    self.genre_form_name,
+                    self.genre_form_description
+                )
+                message = "Genre added successfully"
+            else:  # edit
+                success = DatabaseService.update_genre(
+                    self.genre_form_id,
+                    self.genre_form_name,
+                    self.genre_form_description
+                )
+                message = "Genre updated successfully"
+
+            if success:
+                self.success_message = message
+                self.close_genre_form()
+                self.load_genres_list()
+                self.load_genres()  # Refresh genres dropdown
+            else:
+                self.genre_form_error = "Failed to save genre. Genre name may already exist."
+
+        except Exception as e:
+            self.genre_form_error = f"Error: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    def delete_genre_confirm(self, genre_id: int):
+        """Delete a genre."""
+        self.is_loading = True
+        self.loading_message = "Deleting genre..."
+
+        try:
+            success = DatabaseService.delete_genre(genre_id)
+            if success:
+                self.success_message = "Genre deleted successfully"
+                self.load_genres_list()
+                self.load_genres()  # Refresh genres dropdown
+            else:
+                self.error_message = "Cannot delete genre. It may be used by books."
+        except Exception as e:
+            self.error_message = f"Error deleting genre: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    # ===== NOTIFICATIONS =====
+
+    def set_notify_selected_user(self, value: str):
+        """Set selected user for notification."""
+        self.notify_selected_user = value
+        # Extract phone number from selection (format: "Name (phone)")
+        if "(" in value and ")" in value:
+            self.notify_phone_number = value.split("(")[1].split(")")[0]
+
+    def set_notify_phone_number(self, value: str):
+        """Set phone number for notification."""
+        self.notify_phone_number = value
+
+    def set_notify_message(self, value: str):
+        """Set notification message."""
+        self.notify_message = value
+
+    def set_notify_group_id(self, value: str):
+        """Set group ID for broadcast."""
+        self.notify_group_id = value
+
+    def set_notify_group_message(self, value: str):
+        """Set group broadcast message."""
+        self.notify_group_message = value
+
+    def use_due_reminder_template(self):
+        """Use due reminder template."""
+        self.notify_message = """📚 PTC Library Reminder
+
+Your borrowed book is due soon:
+
+📖 [Book Title]
+📅 Due: [Due Date]
+
+Please return it by the due date or renew if needed.
+
+Thank you! 🙏"""
+
+    def use_overdue_alert_template(self):
+        """Use overdue alert template."""
+        self.notify_message = """⚠️ PTC Library - Overdue Book
+
+Your borrowed book is overdue:
+
+📖 [Book Title]
+
+Please return it as soon as possible so others can borrow it.
+
+Thank you for your understanding! 🙏"""
+
+    def use_new_book_template(self):
+        """Use new book announcement template."""
+        self.notify_group_message = """📚 New Book Alert!
+
+We've just added a new book to the PTC Library:
+
+📖 [Book Title]
+✍️ by [Author]
+🏷️ Genre: [Genre]
+
+Come and borrow it today! 📚✨"""
+
+    def use_custom_template(self):
+        """Clear message for custom content."""
+        self.notify_message = ""
+        self.notify_group_message = ""
+
+    def send_notification_to_user(self):
+        """Send notification to a user."""
+        from library_admin.services.notifications import NotificationService
+
+        if not self.notify_phone_number:
+            self.error_message = "Please select a user or enter a phone number"
+            return
+
+        if not self.notify_message:
+            self.error_message = "Please enter a message"
+            return
+
+        self.is_loading = True
+        self.loading_message = "Sending message..."
+
+        try:
+            result = NotificationService.send_whatsapp_message(
+                self.notify_phone_number,
+                self.notify_message
+            )
+
+            if result.get("success"):
+                self.success_message = result.get("message", "Message sent successfully")
+                self.notify_message = ""
+                self.notify_phone_number = ""
+                self.notify_selected_user = ""
+            else:
+                self.error_message = result.get("error", "Failed to send message")
+
+        except Exception as e:
+            self.error_message = f"Error: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    def send_notification_to_group(self):
+        """Send broadcast notification to group."""
+        from library_admin.services.notifications import NotificationService
+
+        if not self.notify_group_id:
+            self.error_message = "Please enter a group ID"
+            return
+
+        if not self.notify_group_message:
+            self.error_message = "Please enter a message"
+            return
+
+        self.is_loading = True
+        self.loading_message = "Sending broadcast..."
+
+        try:
+            result = NotificationService.send_group_message(
+                self.notify_group_id,
+                self.notify_group_message
+            )
+
+            if result.get("success"):
+                self.success_message = result.get("message", "Broadcast sent successfully")
+                self.notify_group_message = ""
+            else:
+                self.error_message = result.get("error", "Failed to send broadcast")
+
+        except Exception as e:
+            self.error_message = f"Error: {str(e)}"
+        finally:
+            self.is_loading = False
+            self.loading_message = ""
+
+    def test_evolution_api(self):
+        """Test Evolution API connection."""
+        from library_admin.services.notifications import NotificationService
+
+        self.evolution_api_status = "testing"
+        self.evolution_api_error = ""
+
+        try:
+            result = NotificationService.test_connection()
+
+            if result.get("success"):
+                self.evolution_api_status = "connected"
+                self.success_message = "Evolution API connection successful"
+            else:
+                self.evolution_api_status = "disconnected"
+                self.evolution_api_error = result.get("error", "Connection failed")
+
+        except Exception as e:
+            self.evolution_api_status = "disconnected"
+            self.evolution_api_error = f"Error: {str(e)}"
 
     # ===== MESSAGES =====
 

@@ -6,6 +6,8 @@ from library_admin.pages.dashboard import dashboard_page
 from library_admin.pages.books_v2 import books_page_v2
 from library_admin.pages.loans_v2 import loans_page_v2
 from library_admin.pages.users import users_page
+from library_admin.pages.genres import genres_page
+from library_admin.pages.notifications import notifications_page
 
 
 def login_page() -> rx.Component:
@@ -87,8 +89,8 @@ def bottom_navigation() -> rx.Component:
         rx.hstack(
             rx.link(
                 rx.vstack(
-                    rx.icon("home", size=24),
-                    rx.text("Dashboard", size="1"),
+                    rx.icon("home", size=20),
+                    rx.text("Home", size="1"),
                     spacing="1",
                     align="center",
                 ),
@@ -103,7 +105,7 @@ def bottom_navigation() -> rx.Component:
             ),
             rx.link(
                 rx.vstack(
-                    rx.icon("book", size=24),
+                    rx.icon("book", size=20),
                     rx.text("Books", size="1"),
                     spacing="1",
                     align="center",
@@ -119,7 +121,7 @@ def bottom_navigation() -> rx.Component:
             ),
             rx.link(
                 rx.vstack(
-                    rx.icon("bookmark", size=24),
+                    rx.icon("bookmark", size=20),
                     rx.text("Loans", size="1"),
                     spacing="1",
                     align="center",
@@ -135,7 +137,23 @@ def bottom_navigation() -> rx.Component:
             ),
             rx.link(
                 rx.vstack(
-                    rx.icon("users", size=24),
+                    rx.icon("library", size=20),
+                    rx.text("Genres", size="1"),
+                    spacing="1",
+                    align="center",
+                ),
+                href="/genres",
+                text_decoration="none",
+                color=rx.cond(
+                    State.current_page == "genres",
+                    rx.color("blue", 11),
+                    rx.color("gray", 11),
+                ),
+                flex="1",
+            ),
+            rx.link(
+                rx.vstack(
+                    rx.icon("users", size=20),
                     rx.text("Users", size="1"),
                     spacing="1",
                     align="center",
@@ -151,7 +169,7 @@ def bottom_navigation() -> rx.Component:
             ),
             justify="between",
             align="center",
-            padding="3",
+            padding="2",
         ),
         background_color=rx.color("gray", 2),
         border_top=f"1px solid {rx.color('gray', 6)}",
@@ -215,6 +233,28 @@ def users() -> rx.Component:
     return rx.cond(
         State.is_authenticated,
         main_layout(users_page()),
+        login_page(),
+    )
+
+
+@rx.page(route="/genres", on_load=State.load_genres_list)
+def genres() -> rx.Component:
+    """Genres management page route."""
+    State.current_page = "genres"
+    return rx.cond(
+        State.is_authenticated,
+        main_layout(genres_page()),
+        login_page(),
+    )
+
+
+@rx.page(route="/notifications", on_load=State.load_users)
+def notifications() -> rx.Component:
+    """Notifications page route."""
+    State.current_page = "notifications"
+    return rx.cond(
+        State.is_authenticated,
+        main_layout(notifications_page()),
         login_page(),
     )
 

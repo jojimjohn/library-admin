@@ -75,6 +75,46 @@ def dashboard_stats() -> rx.Component:
     )
 
 
+def quick_actions() -> rx.Component:
+    """Quick action buttons."""
+    return rx.box(
+        rx.vstack(
+            rx.heading("Quick Actions", size="4", margin_bottom="2"),
+            rx.grid(
+                rx.link(
+                    rx.card(
+                        rx.vstack(
+                            rx.icon("bell", size=24, color="orange"),
+                            rx.text("Notifications", size="2", weight="bold"),
+                            spacing="2",
+                            align="center",
+                        ),
+                    ),
+                    href="/notifications",
+                    text_decoration="none",
+                ),
+                rx.link(
+                    rx.card(
+                        rx.vstack(
+                            rx.icon("library", size=24, color="blue"),
+                            rx.text("Genres", size="2", weight="bold"),
+                            spacing="2",
+                            align="center",
+                        ),
+                    ),
+                    href="/genres",
+                    text_decoration="none",
+                ),
+                columns="2",
+                spacing="3",
+                width="100%",
+            ),
+            spacing="2",
+        ),
+        margin_top="4",
+    )
+
+
 def dashboard_page() -> rx.Component:
     """Main dashboard page."""
     return rx.container(
@@ -101,6 +141,9 @@ def dashboard_page() -> rx.Component:
 
             # Stats grid
             dashboard_stats(),
+
+            # Quick actions
+            quick_actions(),
 
             # Refresh button
             rx.button(

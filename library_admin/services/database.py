@@ -178,17 +178,32 @@ class DatabaseService:
             conn.close()
 
     @staticmethod
-    def update_book(book_id: str, title: str, author: str, genre: str) -> bool:
-        """Update an existing book."""
+    def update_book(book_id: str, title: str, author: str, genre: str, new_book_id: str = None) -> bool:
+        """Update an existing book. If new_book_id is provided, also update the book_id."""
         conn = DatabaseService.get_connection()
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
-                UPDATE books
-                SET title = %s, author = %s, genre = %s, updated_at = CURRENT_TIMESTAMP
-                WHERE book_id = %s
-            """, (title, author, genre, book_id))
+            # If changing book_id, check if new ID already exists
+            if new_book_id and new_book_id != book_id:
+                cursor.execute("SELECT book_id FROM books WHERE book_id = %s", (new_book_id,))
+                if cursor.fetchone():
+                    return False  # New book_id already exists
+
+                # Update book_id along with other fields
+                # Note: This also updates foreign key references in loans table due to ON UPDATE CASCADE
+                cursor.execute("""
+                    UPDATE books
+                    SET book_id = %s, title = %s, author = %s, genre = %s, updated_at = CURRENT_TIMESTAMP
+                    WHERE book_id = %s
+                """, (new_book_id, title, author, genre, book_id))
+            else:
+                # Just update title, author, genre
+                cursor.execute("""
+                    UPDATE books
+                    SET title = %s, author = %s, genre = %s, updated_at = CURRENT_TIMESTAMP
+                    WHERE book_id = %s
+                """, (title, author, genre, book_id))
 
             conn.commit()
             return cursor.rowcount > 0
