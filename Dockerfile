@@ -46,12 +46,12 @@ USER reflex
 # Set home directory to /app (reflex needs to write config files)
 ENV HOME=/app
 
-# Expose ports
-EXPOSE 3000 8000
+# Expose port
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:3000/ || exit 1
+    CMD curl -f http://localhost:8000/ || exit 1
 
-# Run Reflex in production mode
-CMD ["reflex", "run", "--env", "prod", "--loglevel", "info"]
+# Run Reflex in production mode (single port for both frontend and backend)
+CMD ["reflex", "run", "--env", "prod", "--loglevel", "info", "--frontend-port", "8000", "--backend-port", "8000"]
