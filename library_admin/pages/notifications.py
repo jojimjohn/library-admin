@@ -110,13 +110,14 @@ def send_to_group_form() -> rx.Component:
             # Group ID
             rx.text("Group ID", size="2", weight="bold"),
             rx.input(
-                placeholder="Enter WhatsApp group ID",
-                value=State.notify_group_id,
-                on_change=State.set_notify_group_id,
+                placeholder="Group ID from settings",
+                value=State.setting_whatsapp_group_id,
+                disabled=True,
+                ,
                 size="2",
             ),
             rx.text(
-                "Get the group ID from WhatsApp or Evolution API",
+                "Using saved group ID from Settings",
                 size="1",
                 color="gray",
             ),

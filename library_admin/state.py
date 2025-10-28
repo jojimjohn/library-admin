@@ -40,6 +40,7 @@ class State(rx.State):
     book_form_author: str = ""
     book_form_genre: str = ""
     book_form_error: str = ""
+    book_form_send_notification: bool = False  # Send notification when adding book
 
     # Loans
     active_loans: List[Dict] = []
@@ -205,6 +206,7 @@ class State(rx.State):
         self.book_form_author = ""
         self.book_form_genre = ""
         self.book_form_error = ""
+        self.book_form_send_notification = False
         if not self.genres:
             self.load_genres()
 
@@ -231,6 +233,7 @@ class State(rx.State):
         self.book_form_author = ""
         self.book_form_genre = ""
         self.book_form_error = ""
+        self.book_form_send_notification = False
 
     def set_book_form_id(self, value: str):
         """Set book form ID."""
@@ -247,6 +250,10 @@ class State(rx.State):
     def set_book_form_genre(self, value: str):
         """Set book form genre."""
         self.book_form_genre = value
+
+    def set_book_form_send_notification(self, value: bool):
+        """Set book form send notification flag."""
+        self.book_form_send_notification = value
 
     def save_book(self):
         """Save book (add or update)."""
@@ -267,6 +274,15 @@ class State(rx.State):
                     self.book_form_genre
                 )
                 message = "Book added successfully"
+
+                # Send notification if requested
+                if success and self.book_form_send_notification:
+                    self._send_new_book_notification(
+                        self.book_form_title,
+                        self.book_form_author,
+                        self.book_form_genre
+                    )
+
             else:  # edit
                 # Pass new_book_id only if it changed
                 new_id = self.book_form_id if self.book_form_id != self.book_form_original_id else None
@@ -291,6 +307,35 @@ class State(rx.State):
         finally:
             self.is_loading = False
             self.loading_message = ""
+
+    def _send_new_book_notification(self, title: str, author: str, genre: str):
+        """Send notification about new book to group."""
+        from library_admin.services.notifications import NotificationService
+
+        try:
+            # Get template
+            template = DatabaseService.get_template_by_name('new_book_announcement')
+            if not template:
+                return  # Silently skip if template not found
+
+            # Get group ID from settings
+            group_id = self.setting_whatsapp_group_id
+            if not group_id:
+                return  # Silently skip if no group ID
+
+            # Format message
+            message = template['message_content'].format(
+                book_title=title,
+                author=author,
+                genre=genre
+            )
+
+            # Send notification
+            NotificationService.send_group_message(group_id, message)
+
+        except Exception as e:
+            # Don't fail the book save if notification fails
+            print(f"Failed to send new book notification: {e}")
 
     def delete_book_confirm(self, book_id: str):
         """Delete a book."""
@@ -664,8 +709,11 @@ Come and borrow it today! 📚✨"""
         """Send broadcast notification to group."""
         from library_admin.services.notifications import NotificationService
 
-        if not self.notify_group_id:
-            self.error_message = "Please enter a group ID"
+        # Use group ID from settings
+        group_id = self.setting_whatsapp_group_id
+
+        if not group_id:
+            self.error_message = "Please configure group ID in Settings first"
             return
 
         if not self.notify_group_message:
@@ -677,7 +725,7 @@ Come and borrow it today! 📚✨"""
 
         try:
             result = NotificationService.send_group_message(
-                self.notify_group_id,
+                group_id,
                 self.notify_group_message
             )
 

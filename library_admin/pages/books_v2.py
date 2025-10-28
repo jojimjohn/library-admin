@@ -151,6 +151,25 @@ def book_form_compact() -> rx.Component:
                     width="100%",
                 ),
 
+                # Send notification checkbox (only for new books)
+                rx.cond(
+                    State.book_form_mode == "add",
+                    rx.box(
+                        rx.hstack(
+                            rx.checkbox(
+                                checked=State.book_form_send_notification,
+                                on_change=State.set_book_form_send_notification,
+                                size="1",
+                            ),
+                            rx.text("Send notification to WhatsApp group", size="1", color="gray"),
+                            spacing="2",
+                            align="center",
+                        ),
+                        padding_top="2",
+                        border_top=f"1px solid {rx.color('gray', 4)}",
+                    ),
+                ),
+
                 # Actions
                 rx.hstack(
                     rx.dialog.close(
@@ -173,7 +192,7 @@ def book_form_compact() -> rx.Component:
 
 
 def compact_filters() -> rx.Component:
-    """Compact filter chips."""
+    """Compact filter chips with genre dropdown."""
     return rx.vstack(
         rx.input(
             placeholder="Search books...",
@@ -183,8 +202,8 @@ def compact_filters() -> rx.Component:
             size="2",
         ),
 
+        # Status filter badges
         rx.hstack(
-            # Status filter
             rx.badge("All",
                     variant=rx.cond(State.book_filter_status == "all", "solid", "soft"),
                     on_click=lambda: State.set_book_filter_status("all"), cursor="pointer", size="1"),
@@ -197,6 +216,29 @@ def compact_filters() -> rx.Component:
                     color_scheme="orange",
                     on_click=lambda: State.set_book_filter_status("borrowed"), cursor="pointer", size="1"),
             spacing="2",
+        ),
+
+        # Genre filter dropdown
+        rx.hstack(
+            rx.text("Genre:", size="1", weight="bold"),
+            rx.select(
+                State.genres_with_all,
+                value=State.book_filter_genre,
+                on_change=State.set_book_filter_genre,
+                placeholder="All genres",
+                size="1",
+            ),
+            rx.cond(
+                State.book_filter_genre != "all",
+                rx.icon_button(
+                    rx.icon("x", size=12),
+                    on_click=lambda: State.set_book_filter_genre("all"),
+                    size="1",
+                    variant="ghost",
+                ),
+            ),
+            spacing="2",
+            align="center",
         ),
 
         spacing="2",
