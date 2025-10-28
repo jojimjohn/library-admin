@@ -113,7 +113,6 @@ def send_to_group_form() -> rx.Component:
                 placeholder="Group ID from settings",
                 value=State.setting_whatsapp_group_id,
                 disabled=True,
-                ,
                 size="2",
             ),
             rx.text(
