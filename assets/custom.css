@@ -3,6 +3,7 @@
 [class*="reflex-badge"],
 [class*="Reflex"],
 a[href*="reflex.dev"],
+a[class*="css-1qwptgo"],
 a[href*="Built with Reflex"] {
     display: none !important;
     visibility: hidden !important;
