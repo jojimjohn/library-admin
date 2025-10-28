@@ -26,7 +26,7 @@ class Config:
     APP_HOST = os.getenv("APP_HOST", "0.0.0.0")
 
     # Admin Auth
-    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
+    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme123")
 
     # Timezone
     TIMEZONE = os.getenv("TIMEZONE", "Australia/Perth")

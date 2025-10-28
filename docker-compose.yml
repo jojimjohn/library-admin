@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       # Domain (required for API URL)
-      - DOMAIN=${DOMAIN:-library.ptcau.com}
+      - DOMAIN=${DOMAIN:-lib.ptcau.com}
 
       # Database connection
       - DB_HOST=${DB_HOST:-postgres}
@@ -48,8 +48,8 @@ services:
       - "traefik.http.services.library-admin-backend.loadbalancer.server.port=8000"
       - "traefik.http.services.library-admin-backend.loadbalancer.passhostheader=true"
       # WebSocket middleware - preserve upgrade headers
-      - "traefik.http.middlewares.library-admin-ws.headers.customrequestheaders.X-Forwarded-Proto=http"
-      - "traefik.http.middlewares.library-admin-ws.headers.customresponseheaders.X-Forwarded-Proto=http"
+      - "traefik.http.middlewares.library-admin-ws.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.middlewares.library-admin-ws.headers.customresponseheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.library-admin-backend.middlewares=library-admin-ws"
 
 networks:

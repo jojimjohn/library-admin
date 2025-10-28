@@ -7,7 +7,7 @@ import os
 is_prod = os.getenv("REFLEX_ENV", "dev") == "prod"
 
 # Get domain from environment
-domain = os.getenv("DOMAIN", "library.ptcau.com")
+domain = os.getenv("DOMAIN", "lib.ptcau.com")
 
 config = rx.Config(
     app_name="library_admin",
