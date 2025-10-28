@@ -204,7 +204,7 @@ def user_form_modern() -> rx.Component:
             max_width="500px",
         ),
 
-        open=State.user_form_open,
+        open=State.user_form_mode != "",
     )
 
 
