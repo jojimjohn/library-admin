@@ -47,6 +47,12 @@ class State(rx.State):
 
     # Users
     users: List[Dict] = []
+    user_search: str = ""
+    user_form_mode: str = ""
+    user_form_id: str = ""
+    user_form_name: str = ""
+    user_form_role: str = ""
+    user_form_error: str = ""
 
     # Loading states
     is_loading: bool = False
@@ -328,6 +334,72 @@ class State(rx.State):
         finally:
             self.is_loading = False
             self.loading_message = ""
+
+    def set_user_search(self, value: str):
+        """Set user search."""
+        self.user_search = value
+
+    def search_users(self):
+        """Search users."""
+        if self.user_search:
+            search_lower = self.user_search.lower()
+            all_users = DatabaseService.get_all_users()
+            self.users = [
+                u for u in all_users
+                if search_lower in u.get('name', '').lower()
+                or search_lower in u.get('user_id', '').lower()
+            ]
+        else:
+            self.load_users()
+
+    def open_edit_user_form(self, user_id: str):
+        """Open edit user form."""
+        users_list = [u for u in self.users if u['user_id'] == user_id]
+        if users_list:
+            user = users_list[0]
+            self.user_form_mode = "edit"
+            self.user_form_id = user['user_id']
+            self.user_form_name = user.get('name', '')
+            self.user_form_role = user.get('role', 'user')
+            self.user_form_error = ""
+
+    def set_user_form_name(self, value: str):
+        """Set user form name."""
+        self.user_form_name = value
+
+    def set_user_form_role(self, value: str):
+        """Set user form role."""
+        self.user_form_role = value
+
+    def close_user_form(self):
+        """Close user form."""
+        self.user_form_mode = ""
+        self.user_form_error = ""
+
+    def save_user(self):
+        """Save user."""
+        if not self.user_form_name:
+            self.user_form_error = "Name is required"
+            return
+
+        self.is_loading = True
+        try:
+            success = DatabaseService.update_user(
+                self.user_form_id,
+                self.user_form_name,
+                self.user_form_role
+            )
+
+            if success:
+                self.success_message = "User updated successfully"
+                self.close_user_form()
+                self.load_users()
+            else:
+                self.user_form_error = "Failed to update user"
+        except Exception as e:
+            self.user_form_error = f"Error: {str(e)}"
+        finally:
+            self.is_loading = False
 
     # ===== MESSAGES =====
 

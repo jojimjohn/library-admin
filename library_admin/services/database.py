@@ -362,7 +362,9 @@ class DatabaseService:
                     (l.borrow_date + INTERVAL '14 days') as due_date,
                     b.title,
                     b.author,
-                    u.name as user_name,
+                    b.genre,
+                    COALESCE(u.name, 'User ' || u.user_id) as name,
+                    EXTRACT(DAY FROM ((l.borrow_date + INTERVAL '14 days') - CURRENT_DATE))::integer as days_remaining,
                     CASE
                         WHEN (l.borrow_date + INTERVAL '14 days') < CURRENT_DATE THEN 'overdue'
                         WHEN (l.borrow_date + INTERVAL '14 days') BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '2 days' THEN 'due_soon'
@@ -370,7 +372,7 @@ class DatabaseService:
                     END as status
                 FROM loans l
                 JOIN books b ON l.book_id = b.book_id
-                JOIN users u ON l.user_id = u.user_id
+                LEFT JOIN users u ON l.user_id = u.user_id
                 WHERE l.return_date IS NULL
                 ORDER BY l.borrow_date + INTERVAL '14 days'
             """)
@@ -425,6 +427,27 @@ class DatabaseService:
                 result.append(user_dict)
 
             return result
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def update_user(user_id: str, name: str, role: str) -> bool:
+        """Update user details."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "UPDATE users SET name = %s, role = %s WHERE user_id = %s",
+                (name, role, user_id)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            print(f"Error updating user: {e}")
+            return False
         finally:
             cursor.close()
             conn.close()

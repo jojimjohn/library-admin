@@ -3,8 +3,9 @@
 import reflex as rx
 from library_admin.state import State
 from library_admin.pages.dashboard import dashboard_page
-from library_admin.pages.books import books_page
-from library_admin.pages.loans import loans_page
+from library_admin.pages.books_v2 import books_page_v2
+from library_admin.pages.loans_v2 import loans_page_v2
+from library_admin.pages.users import users_page
 
 
 def login_page() -> rx.Component:
@@ -132,6 +133,22 @@ def bottom_navigation() -> rx.Component:
                 ),
                 flex="1",
             ),
+            rx.link(
+                rx.vstack(
+                    rx.icon("users", size=24),
+                    rx.text("Users", size="1"),
+                    spacing="1",
+                    align="center",
+                ),
+                href="/users",
+                text_decoration="none",
+                color=rx.cond(
+                    State.current_page == "users",
+                    rx.color("blue", 11),
+                    rx.color("gray", 11),
+                ),
+                flex="1",
+            ),
             justify="between",
             align="center",
             padding="3",
@@ -175,7 +192,7 @@ def books() -> rx.Component:
     State.current_page = "books"
     return rx.cond(
         State.is_authenticated,
-        main_layout(books_page()),
+        main_layout(books_page_v2()),
         login_page(),
     )
 
@@ -186,7 +203,18 @@ def loans() -> rx.Component:
     State.current_page = "loans"
     return rx.cond(
         State.is_authenticated,
-        main_layout(loans_page()),
+        main_layout(loans_page_v2()),
+        login_page(),
+    )
+
+
+@rx.page(route="/users", on_load=State.load_users)
+def users() -> rx.Component:
+    """Users management page route."""
+    State.current_page = "users"
+    return rx.cond(
+        State.is_authenticated,
+        main_layout(users_page()),
         login_page(),
     )
 
