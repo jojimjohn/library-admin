@@ -2,8 +2,8 @@
 
 import reflex as rx
 from library_admin.state import State
-from library_admin.pages.dashboard import dashboard_page
-from library_admin.pages.books_v2 import books_page_v2
+from library_admin.pages.dashboard_modern import dashboard_page
+from library_admin.pages.books_modern import books_page_modern
 from library_admin.pages.loans_v2 import loans_page_v2
 from library_admin.pages.users import users_page
 from library_admin.pages.genres import genres_page
@@ -63,15 +63,20 @@ def login_page() -> rx.Component:
 
 
 def navigation_bar() -> rx.Component:
-    """Top navigation bar with improved design."""
+    """Modern top navigation bar with gradient and clean design."""
     return rx.box(
         rx.hstack(
-            # Logo/Title area with icon
+            # Logo/Title area with gradient icon
             rx.hstack(
-                rx.icon("library", size=24, color=rx.color("blue", 11)),
+                rx.box(
+                    rx.icon("library", size=24, color="#FFFFFF"),
+                    background="linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%)",
+                    border_radius="12px",
+                    padding="2",
+                ),
                 rx.vstack(
-                    rx.heading("PTC Library", size="5", color=rx.color("blue", 11)),
-                    rx.text("Admin Dashboard", size="1", color="gray"),
+                    rx.heading("PTC Library", size="5", color="#1A237E", weight="bold"),
+                    rx.text("Admin Dashboard", size="1", color="#757575"),
                     spacing="0",
                     align="start",
                 ),
@@ -86,15 +91,17 @@ def navigation_bar() -> rx.Component:
                         rx.icon("settings", size=18),
                         variant="ghost",
                         size="2",
+                        border_radius="10px",
                     ),
                     href="/settings",
                 ),
                 rx.button(
-                    rx.icon("log_out", size=18),
+                    rx.icon("log_out", size=16),
                     "Logout",
                     on_click=State.logout,
                     variant="soft",
                     size="2",
+                    border_radius="10px",
                 ),
                 spacing="2",
             ),
@@ -102,102 +109,68 @@ def navigation_bar() -> rx.Component:
             align="center",
             padding="3",
         ),
-        background_color=rx.color("gray", 2),
-        border_bottom=f"1px solid {rx.color('gray', 6)}",
-        box_shadow="0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+        background="linear-gradient(135deg, #F5F7FA 0%, #FFFFFF 100%)",
+        border_bottom="1px solid #E0E0E0",
+        box_shadow="0 2px 8px rgba(0, 0, 0, 0.05)",
+        position="sticky",
+        top="0",
+        z_index="999",
     )
 
 
 def bottom_navigation() -> rx.Component:
-    """Bottom navigation for mobile."""
+    """Modern bottom navigation for mobile with icons and active states."""
+    def nav_item(icon: str, label: str, page: str, href: str):
+        """Create a navigation item with active state."""
+        is_active = State.current_page == page
+
+        return rx.link(
+            rx.vstack(
+                rx.cond(
+                    is_active,
+                    rx.box(
+                        rx.icon(icon, size=22, color="#FFFFFF"),
+                        background="linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%)",
+                        border_radius="12px",
+                        padding="2",
+                    ),
+                    rx.icon(icon, size=22, color="#757575"),
+                ),
+                rx.text(
+                    label,
+                    size="1",
+                    weight=rx.cond(is_active, "bold", "medium"),
+                    color=rx.cond(is_active, "#29B6F6", "#757575"),
+                ),
+                spacing="1",
+                align="center",
+            ),
+            href=href,
+            text_decoration="none",
+            flex="1",
+            display="flex",
+            justify_content="center",
+            _hover={
+                "transform": "translateY(-2px)",
+                "transition": "transform 0.2s",
+            },
+        )
+
     return rx.box(
         rx.hstack(
-            rx.link(
-                rx.vstack(
-                    rx.icon("home", size=20),
-                    rx.text("Home", size="1"),
-                    spacing="1",
-                    align="center",
-                ),
-                href="/",
-                text_decoration="none",
-                color=rx.cond(
-                    State.current_page == "dashboard",
-                    rx.color("blue", 11),
-                    rx.color("gray", 11),
-                ),
-                flex="1",
-            ),
-            rx.link(
-                rx.vstack(
-                    rx.icon("book", size=20),
-                    rx.text("Books", size="1"),
-                    spacing="1",
-                    align="center",
-                ),
-                href="/books",
-                text_decoration="none",
-                color=rx.cond(
-                    State.current_page == "books",
-                    rx.color("blue", 11),
-                    rx.color("gray", 11),
-                ),
-                flex="1",
-            ),
-            rx.link(
-                rx.vstack(
-                    rx.icon("bookmark", size=20),
-                    rx.text("Loans", size="1"),
-                    spacing="1",
-                    align="center",
-                ),
-                href="/loans",
-                text_decoration="none",
-                color=rx.cond(
-                    State.current_page == "loans",
-                    rx.color("blue", 11),
-                    rx.color("gray", 11),
-                ),
-                flex="1",
-            ),
-            rx.link(
-                rx.vstack(
-                    rx.icon("library", size=20),
-                    rx.text("Genres", size="1"),
-                    spacing="1",
-                    align="center",
-                ),
-                href="/genres",
-                text_decoration="none",
-                color=rx.cond(
-                    State.current_page == "genres",
-                    rx.color("blue", 11),
-                    rx.color("gray", 11),
-                ),
-                flex="1",
-            ),
-            rx.link(
-                rx.vstack(
-                    rx.icon("users", size=20),
-                    rx.text("Users", size="1"),
-                    spacing="1",
-                    align="center",
-                ),
-                href="/users",
-                text_decoration="none",
-                color=rx.cond(
-                    State.current_page == "users",
-                    rx.color("blue", 11),
-                    rx.color("gray", 11),
-                ),
-                flex="1",
-            ),
+            nav_item("home", "Home", "dashboard", "/"),
+            nav_item("book_open", "Books", "books", "/books"),
+            nav_item("bookmark", "Loans", "loans", "/loans"),
+            nav_item("library", "Genres", "genres", "/genres"),
+            nav_item("users", "Users", "users", "/users"),
             justify="between",
             align="center",
             padding="2",
+            width="100%",
         ),
-        background_color=rx.color("gray", 2),
-        border_top=f"1px solid {rx.color('gray', 6)}",
+        background="linear-gradient(180deg, #FFFFFF 0%, #F5F7FA 100%)",
+        border_top="1px solid #E0E0E0",
+        box_shadow="0 -2px 8px rgba(0, 0, 0, 0.05)",
         position="fixed",
         bottom="0",
         left="0",
@@ -235,7 +208,7 @@ def books() -> rx.Component:
     State.current_page = "books"
     return rx.cond(
         State.is_authenticated,
-        main_layout(books_page_v2()),
+        main_layout(books_page_modern()),
         login_page(),
     )
 
