@@ -17,61 +17,74 @@ def settings_form_card() -> rx.Component:
     """Application settings card."""
     return gradient_card(
         rx.vstack(
-            rx.text("Application Settings", size="5", weight="bold", color=Colors.white),
+            rx.box(
+                rx.text("Application Settings", size="5", weight="bold", color=Colors.white),
+                text_align="center",
+                width="100%",
+                margin_bottom="3",
+            ),
 
             # WhatsApp Group ID
             rx.vstack(
-                rx.text("WhatsApp Group ID", size="2", weight="bold", color=Colors.white),
+                rx.text("WhatsApp Group ID", size="2", weight="medium", color=Colors.white),
                 rx.input(
                     placeholder="120363422718577509",
                     value=State.setting_whatsapp_group_id,
                     on_change=State.set_setting_whatsapp_group_id,
                     size="3",
+                    width="100%",
                 ),
-                spacing="1",
+                spacing="2",
                 width="100%",
+                align="start",
             ),
 
             # Loan Due Days
             rx.vstack(
-                rx.text("Loan Due Period (days)", size="2", weight="bold", color=Colors.white),
+                rx.text("Loan Due Period (days)", size="2", weight="medium", color=Colors.white),
                 rx.input(
                     type="number",
                     placeholder="14",
                     value=State.setting_loan_due_days,
                     on_change=State.set_setting_loan_due_days,
                     size="3",
+                    width="100%",
                 ),
-                spacing="1",
+                spacing="2",
                 width="100%",
+                align="start",
             ),
 
             # Reminder Days Before
             rx.vstack(
-                rx.text("Reminder Days Before Due", size="2", weight="bold", color=Colors.white),
+                rx.text("Reminder Days Before Due", size="2", weight="medium", color=Colors.white),
                 rx.input(
                     type="number",
                     placeholder="2",
                     value=State.setting_reminder_days_before,
                     on_change=State.set_setting_reminder_days_before,
                     size="3",
+                    width="100%",
                 ),
-                spacing="1",
+                spacing="2",
                 width="100%",
+                align="start",
             ),
 
             # Overdue Alert Days
             rx.vstack(
-                rx.text("Overdue Alert Days After", size="2", weight="bold", color=Colors.white),
+                rx.text("Overdue Alert Days After", size="2", weight="medium", color=Colors.white),
                 rx.input(
                     type="number",
                     placeholder="1",
                     value=State.setting_overdue_alert_days_after,
                     on_change=State.set_setting_overdue_alert_days_after,
                     size="3",
+                    width="100%",
                 ),
-                spacing="1",
+                spacing="2",
                 width="100%",
+                align="start",
             ),
 
             # Save button
@@ -86,10 +99,12 @@ def settings_form_card() -> rx.Component:
                 _hover={"background": "rgba(255, 255, 255, 0.3)"},
             ),
 
-            spacing="3",
+            spacing="4",
             width="100%",
+            align="stretch",
         ),
         gradient=Gradients.light_blue_gradient,
+        padding="6",
     )
 
 
@@ -97,12 +112,21 @@ def bulk_notifications_card() -> rx.Component:
     """Bulk notification buttons."""
     return gradient_card(
         rx.vstack(
-            rx.text("Bulk Notifications", size="5", weight="bold", color=Colors.white),
-            rx.text(
-                "Send alerts to all users with overdue or due-soon books",
-                size="2",
-                color=Colors.white,
-                opacity="0.9",
+            rx.box(
+                rx.text("Bulk Notifications", size="5", weight="bold", color=Colors.white),
+                text_align="center",
+                width="100%",
+            ),
+            rx.box(
+                rx.text(
+                    "Send alerts to all users with overdue or due-soon books",
+                    size="2",
+                    color=Colors.white,
+                    opacity="0.9",
+                ),
+                text_align="center",
+                width="100%",
+                margin_bottom="2",
             ),
 
             # Overdue alerts
@@ -153,10 +177,12 @@ def bulk_notifications_card() -> rx.Component:
                 align="center",
             ),
 
-            spacing="3",
+            spacing="4",
             width="100%",
+            align="stretch",
         ),
         gradient=Gradients.navy_gradient,
+        padding="6",
     )
 
 

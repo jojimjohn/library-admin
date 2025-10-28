@@ -61,12 +61,14 @@ def connection_status_modern() -> rx.Component:
 
             spacing="3",
             width="100%",
+            align="start",
         ),
         gradient=rx.cond(
             State.evolution_api_status == "connected",
             Gradients.mint_gradient,
             Gradients.coral_gradient
         ),
+        padding="5",
     )
 
 
@@ -74,38 +76,63 @@ def send_to_user_card() -> rx.Component:
     """Send message to individual user."""
     return gradient_card(
         rx.vstack(
-            rx.text("Send to User", size="5", weight="bold", color=Colors.white),
+            rx.box(
+                rx.text("Send to User", size="5", weight="bold", color=Colors.white),
+                text_align="center",
+                width="100%",
+                margin_bottom="3",
+            ),
 
             # User selection
-            rx.select(
-                State.user_select_options,
-                placeholder="Select user...",
-                value=State.notify_selected_user,
-                on_change=State.set_notify_selected_user,
-                size="3",
+            rx.vstack(
+                rx.text("Select User", size="2", weight="medium", color=Colors.white),
+                rx.select(
+                    State.user_select_options,
+                    placeholder="Select user...",
+                    value=State.notify_selected_user,
+                    on_change=State.set_notify_selected_user,
+                    size="3",
+                    width="100%",
+                ),
+                spacing="2",
+                width="100%",
+                align="start",
             ),
 
             # Or phone number
-            rx.input(
-                placeholder="Or enter phone (61412345678)",
-                value=State.notify_phone_number,
-                on_change=State.set_notify_phone_number,
-                size="3",
+            rx.vstack(
+                rx.text("Or Phone Number", size="2", weight="medium", color=Colors.white),
+                rx.input(
+                    placeholder="61412345678 (with country code)",
+                    value=State.notify_phone_number,
+                    on_change=State.set_notify_phone_number,
+                    size="3",
+                    width="100%",
+                ),
+                spacing="2",
+                width="100%",
+                align="start",
             ),
 
             # Message
-            rx.text_area(
-                placeholder="Enter message...",
-                value=State.notify_message,
-                on_change=State.set_notify_message,
-                rows="4",
-            ),
-
-            rx.text(
-                f"Characters: {State.notify_message.length()}",
-                size="1",
-                color=Colors.white,
-                opacity="0.8",
+            rx.vstack(
+                rx.text("Message", size="2", weight="medium", color=Colors.white),
+                rx.text_area(
+                    placeholder="Enter message...",
+                    value=State.notify_message,
+                    on_change=State.set_notify_message,
+                    rows="4",
+                    width="100%",
+                ),
+                rx.text(
+                    f"Characters: {State.notify_message.length()}",
+                    size="1",
+                    color=Colors.white,
+                    opacity="0.8",
+                ),
+                spacing="2",
+                width="100%",
+                align="start",
             ),
 
             # Send button
@@ -120,10 +147,12 @@ def send_to_user_card() -> rx.Component:
                 _hover={"background": "rgba(255, 255, 255, 0.3)"},
             ),
 
-            spacing="3",
+            spacing="4",
             width="100%",
+            align="stretch",
         ),
         gradient=Gradients.light_blue_gradient,
+        padding="6",
     )
 
 
@@ -131,43 +160,60 @@ def send_to_group_card() -> rx.Component:
     """Send broadcast to group."""
     return gradient_card(
         rx.vstack(
-            rx.text("Broadcast to Group", size="5", weight="bold", color=Colors.white),
-
-            # Group ID from settings
-            rx.input(
-                placeholder="Group ID from settings",
-                value=State.setting_whatsapp_group_id,
-                disabled=True,
-                size="3",
+            rx.box(
+                rx.text("Broadcast to Group", size="5", weight="bold", color=Colors.white),
+                text_align="center",
+                width="100%",
+                margin_bottom="3",
             ),
 
-            rx.cond(
-                State.setting_whatsapp_group_id == "",
-                rx.text(
-                    "⚠️ Configure group ID in Settings",
-                    size="1",
-                    color=Colors.white,
+            # Group ID from settings
+            rx.vstack(
+                rx.text("Group ID", size="2", weight="medium", color=Colors.white),
+                rx.input(
+                    placeholder="From settings",
+                    value=State.setting_whatsapp_group_id,
+                    disabled=True,
+                    size="3",
+                    width="100%",
                 ),
-                rx.text(
-                    "✓ Using saved group ID",
-                    size="1",
-                    color=Colors.white,
+                rx.cond(
+                    State.setting_whatsapp_group_id == "",
+                    rx.text(
+                        "⚠️ Configure group ID in Settings",
+                        size="1",
+                        color=Colors.white,
+                    ),
+                    rx.text(
+                        "✓ Using saved group ID",
+                        size="1",
+                        color=Colors.white,
+                    ),
                 ),
+                spacing="2",
+                width="100%",
+                align="start",
             ),
 
             # Message
-            rx.text_area(
-                placeholder="Enter broadcast message...",
-                value=State.notify_group_message,
-                on_change=State.set_notify_group_message,
-                rows="4",
-            ),
-
-            rx.text(
-                f"Characters: {State.notify_group_message.length()}",
-                size="1",
-                color=Colors.white,
-                opacity="0.8",
+            rx.vstack(
+                rx.text("Broadcast Message", size="2", weight="medium", color=Colors.white),
+                rx.text_area(
+                    placeholder="Enter broadcast message...",
+                    value=State.notify_group_message,
+                    on_change=State.set_notify_group_message,
+                    rows="4",
+                    width="100%",
+                ),
+                rx.text(
+                    f"Characters: {State.notify_group_message.length()}",
+                    size="1",
+                    color=Colors.white,
+                    opacity="0.8",
+                ),
+                spacing="2",
+                width="100%",
+                align="start",
             ),
 
             # Send button
@@ -182,10 +228,12 @@ def send_to_group_card() -> rx.Component:
                 _hover={"background": "rgba(255, 255, 255, 0.3)"},
             ),
 
-            spacing="3",
+            spacing="4",
             width="100%",
+            align="stretch",
         ),
         gradient=Gradients.navy_gradient,
+        padding="6",
     )
 
 

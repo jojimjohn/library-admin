@@ -79,11 +79,14 @@ def gradient_card(
         gradient: Background gradient (from Gradients class)
         **props: Additional properties
     """
+    # Extract padding if provided in props, otherwise use default
+    padding = props.pop("padding", "5")
+
     return rx.box(
         *children,
         background=gradient,
-        border_radius="20px",
-        padding="4",
+        border_radius="16px",
+        padding=padding,
         box_shadow=Shadows.md,
         **props
     )
@@ -111,7 +114,7 @@ def stat_card_modern(
         rx.vstack(
             # Icon (centered)
             rx.box(
-                rx.icon(icon, size=32, color=icon_color),
+                rx.icon(icon, size=28, color=icon_color),
                 display="flex",
                 justify_content="center",
                 width="100%",
@@ -120,7 +123,7 @@ def stat_card_modern(
             rx.box(
                 rx.text(
                     title,
-                    size="2",
+                    size="1",
                     weight="medium",
                     color=text_color,
                     opacity="0.9",
@@ -132,21 +135,22 @@ def stat_card_modern(
             rx.box(
                 rx.text(
                     value,
-                    size="8",
+                    size="7",
                     weight="bold",
                     color=text_color,
                 ),
                 text_align="center",
                 width="100%",
             ),
-            spacing="2",
+            spacing="1",
             align="center",
             justify="center",
             width="100%",
             height="100%",
         ),
         gradient=gradient,
-        min_height="140px",
+        min_height="110px",
+        padding="4",
     )
 
 
@@ -170,7 +174,7 @@ def action_card_modern(
         gradient_card(
             rx.vstack(
                 rx.box(
-                    rx.icon(icon, size=icon_size, color=Colors.white),
+                    rx.icon(icon, size=32, color=Colors.white),
                     display="flex",
                     justify_content="center",
                     width="100%",
@@ -178,20 +182,21 @@ def action_card_modern(
                 rx.box(
                     rx.text(
                         title,
-                        size="3",
+                        size="2",
                         weight="bold",
                         color=Colors.white,
                     ),
                     text_align="center",
                     width="100%",
                 ),
-                spacing="3",
+                spacing="2",
                 align="center",
                 justify="center",
                 width="100%",
-                min_height="120px",
+                min_height="100px",
             ),
             gradient=gradient,
+            padding="4",
         ),
         href=href,
         text_decoration="none",
