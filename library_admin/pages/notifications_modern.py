@@ -20,12 +20,15 @@ def connection_status_modern() -> rx.Component:
             rx.hstack(
                 rx.text("Evolution API Status", size="4", weight="bold", color=Colors.white),
                 rx.spacer(),
-                modern_button(
+                rx.button(
+                    rx.icon("refresh_cw", size=16),
                     "Test",
-                    icon="refresh_cw",
                     on_click=State.test_evolution_api,
                     variant="soft",
-                    color_scheme="whiteAlpha",
+                    size="2",
+                    background="rgba(255, 255, 255, 0.2)",
+                    color=Colors.white,
+                    _hover={"background": "rgba(255, 255, 255, 0.3)"},
                 ),
                 width="100%",
                 align="center",
@@ -106,12 +109,15 @@ def send_to_user_card() -> rx.Component:
             ),
 
             # Send button
-            modern_button(
+            rx.button(
+                rx.icon("send", size=18),
                 "Send Message",
-                icon="send",
                 on_click=State.send_notification_to_user,
                 width="100%",
-                color_scheme="whiteAlpha",
+                size="3",
+                background="rgba(255, 255, 255, 0.2)",
+                color=Colors.white,
+                _hover={"background": "rgba(255, 255, 255, 0.3)"},
             ),
 
             spacing="3",
@@ -165,12 +171,15 @@ def send_to_group_card() -> rx.Component:
             ),
 
             # Send button
-            modern_button(
+            rx.button(
+                rx.icon("megaphone", size=18),
                 "Send Broadcast",
-                icon="megaphone",
                 on_click=State.send_notification_to_group,
                 width="100%",
-                color_scheme="whiteAlpha",
+                size="3",
+                background="rgba(255, 255, 255, 0.2)",
+                color=Colors.white,
+                _hover={"background": "rgba(255, 255, 255, 0.3)"},
             ),
 
             spacing="3",

@@ -28,10 +28,17 @@ def genre_card_modern(genre: Dict) -> rx.Component:
                     color=Colors.white,
                 ),
                 rx.spacer(),
-                rx.badge(
-                    f"{genre['book_count']} books",
-                    color_scheme="whiteAlpha",
-                    size="2",
+                rx.box(
+                    rx.text(
+                        f"{genre['book_count']} books",
+                        size="2",
+                        weight="medium",
+                        color=Colors.white,
+                    ),
+                    background="rgba(255, 255, 255, 0.2)",
+                    border_radius="12px",
+                    padding_x="3",
+                    padding_y="1",
                 ),
                 width="100%",
                 align="center",
@@ -50,31 +57,33 @@ def genre_card_modern(genre: Dict) -> rx.Component:
 
             # Action buttons
             rx.hstack(
-                modern_button(
+                rx.button(
+                    rx.icon("pencil", size=16),
                     "Edit",
-                    icon="pencil",
                     on_click=lambda: State.open_edit_genre_form(genre["genre_id"]),
                     variant="soft",
-                    color_scheme="whiteAlpha",
+                    size="2",
+                    background="rgba(255, 255, 255, 0.2)",
+                    color=Colors.white,
+                    _hover={"background": "rgba(255, 255, 255, 0.3)"},
                 ),
                 rx.cond(
                     genre["book_count"] == 0,
-                    modern_button(
+                    rx.button(
+                        rx.icon("trash_2", size=16),
                         "Delete",
-                        icon="trash_2",
                         on_click=lambda: State.delete_genre_confirm(genre["genre_id"]),
                         variant="soft",
+                        size="2",
                         color_scheme="red",
                     ),
-                    rx.box(
-                        modern_button(
-                            "Delete",
-                            icon="trash_2",
-                            variant="soft",
-                            color_scheme="gray",
-                        ),
+                    rx.button(
+                        rx.icon("trash_2", size=16),
+                        "Delete",
+                        variant="soft",
+                        size="2",
+                        disabled=True,
                         opacity="0.5",
-                        cursor="not-allowed",
                     ),
                 ),
                 spacing="2",

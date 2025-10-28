@@ -75,12 +75,15 @@ def settings_form_card() -> rx.Component:
             ),
 
             # Save button
-            modern_button(
+            rx.button(
+                rx.icon("check", size=18),
                 "Save Settings",
-                icon="check",
                 on_click=State.save_settings,
                 width="100%",
-                color_scheme="whiteAlpha",
+                size="3",
+                background="rgba(255, 255, 255, 0.2)",
+                color=Colors.white,
+                _hover={"background": "rgba(255, 255, 255, 0.3)"},
             ),
 
             spacing="3",
