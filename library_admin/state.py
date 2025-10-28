@@ -42,6 +42,8 @@ class State(rx.State):
 
     # Loans
     active_loans: List[Dict] = []
+    loan_search: str = ""
+    loan_filter_status: str = "all"
 
     # Users
     users: List[Dict] = []
@@ -258,18 +260,58 @@ class State(rx.State):
     # ===== LOANS =====
 
     def load_active_loans(self):
-        """Load all active loans."""
+        """Load all active loans with filters."""
         self.is_loading = True
         self.loading_message = "Loading loans..."
 
         try:
-            self.active_loans = DatabaseService.get_active_loans()
+            # Get all loans first
+            all_loans = DatabaseService.get_active_loans()
+
+            # Apply search filter
+            if self.loan_search:
+                search_lower = self.loan_search.lower()
+                all_loans = [
+                    loan for loan in all_loans
+                    if search_lower in loan.get('title', '').lower()
+                    or search_lower in loan.get('author', '').lower()
+                    or search_lower in loan.get('book_id', '').lower()
+                    or search_lower in loan.get('user_id', '').lower()
+                ]
+
+            # Apply status filter
+            if self.loan_filter_status != "all":
+                all_loans = [
+                    loan for loan in all_loans
+                    if loan.get('status') == self.loan_filter_status
+                ]
+
+            self.active_loans = all_loans
             self.error_message = ""
         except Exception as e:
             self.error_message = f"Error loading loans: {str(e)}"
         finally:
             self.is_loading = False
             self.loading_message = ""
+
+    def set_loan_search(self, value: str):
+        """Set loan search filter."""
+        self.loan_search = value
+
+    def set_loan_filter_status(self, value: str):
+        """Set loan status filter."""
+        self.loan_filter_status = value
+        self.load_active_loans()
+
+    def search_loans(self):
+        """Search loans."""
+        self.load_active_loans()
+
+    def clear_loan_filters(self):
+        """Clear all loan filters."""
+        self.loan_search = ""
+        self.loan_filter_status = "all"
+        self.load_active_loans()
 
     # ===== USERS =====
 

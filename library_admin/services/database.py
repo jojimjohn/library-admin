@@ -244,6 +244,106 @@ class DatabaseService:
             cursor.close()
             conn.close()
 
+    @staticmethod
+    def get_genres_with_counts() -> List[Dict]:
+        """Get all genres with book counts."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT
+                    g.genre_id,
+                    g.genre_name,
+                    g.description,
+                    g.display_order,
+                    COUNT(b.book_id) as book_count
+                FROM genres g
+                LEFT JOIN books b ON g.genre_name = b.genre
+                GROUP BY g.genre_id, g.genre_name, g.description, g.display_order
+                ORDER BY g.display_order, g.genre_name
+            """)
+            return cursor.fetchall()
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def add_genre(genre_name: str, description: str = "") -> bool:
+        """Add a new genre."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            # Get max display_order
+            cursor.execute("SELECT COALESCE(MAX(display_order), 0) + 1 FROM genres")
+            display_order = cursor.fetchone()['coalesce']
+
+            cursor.execute(
+                "INSERT INTO genres (genre_name, description, display_order) VALUES (%s, %s, %s)",
+                (genre_name, description, display_order)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            print(f"Error adding genre: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def update_genre(genre_id: int, genre_name: str, description: str) -> bool:
+        """Update genre details."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute(
+                "UPDATE genres SET genre_name = %s, description = %s WHERE genre_id = %s",
+                (genre_name, description, genre_id)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            print(f"Error updating genre: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def delete_genre(genre_id: int) -> bool:
+        """Delete a genre (only if no books use it)."""
+        conn = DatabaseService.get_connection()
+        cursor = conn.cursor()
+
+        try:
+            # Check if any books use this genre
+            cursor.execute("SELECT genre_name FROM genres WHERE genre_id = %s", (genre_id,))
+            genre = cursor.fetchone()
+            if not genre:
+                return False
+
+            cursor.execute("SELECT COUNT(*) as count FROM books WHERE genre = %s", (genre['genre_name'],))
+            count = cursor.fetchone()['count']
+
+            if count > 0:
+                return False  # Cannot delete genre with books
+
+            cursor.execute("DELETE FROM genres WHERE genre_id = %s", (genre_id,))
+            conn.commit()
+            return True
+        except Exception as e:
+            conn.rollback()
+            print(f"Error deleting genre: {e}")
+            return False
+        finally:
+            cursor.close()
+            conn.close()
+
     # ===== LOANS =====
 
     @staticmethod

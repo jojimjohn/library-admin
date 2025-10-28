@@ -4,6 +4,7 @@ import reflex as rx
 from library_admin.state import State
 from library_admin.pages.dashboard import dashboard_page
 from library_admin.pages.books import books_page
+from library_admin.pages.loans import loans_page
 
 
 def login_page() -> rx.Component:
@@ -115,6 +116,22 @@ def bottom_navigation() -> rx.Component:
                 ),
                 flex="1",
             ),
+            rx.link(
+                rx.vstack(
+                    rx.icon("bookmark", size=24),
+                    rx.text("Loans", size="1"),
+                    spacing="1",
+                    align="center",
+                ),
+                href="/loans",
+                text_decoration="none",
+                color=rx.cond(
+                    State.current_page == "loans",
+                    rx.color("blue", 11),
+                    rx.color("gray", 11),
+                ),
+                flex="1",
+            ),
             justify="between",
             align="center",
             padding="3",
@@ -159,6 +176,17 @@ def books() -> rx.Component:
     return rx.cond(
         State.is_authenticated,
         main_layout(books_page()),
+        login_page(),
+    )
+
+
+@rx.page(route="/loans", on_load=State.load_active_loans)
+def loans() -> rx.Component:
+    """Loans management page route."""
+    State.current_page = "loans"
+    return rx.cond(
+        State.is_authenticated,
+        main_layout(loans_page()),
         login_page(),
     )
 
