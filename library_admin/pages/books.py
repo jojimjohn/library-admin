@@ -58,14 +58,14 @@ def book_card(book: Dict) -> rx.Component:
             # Action buttons
             rx.hstack(
                 rx.button(
-                    rx.icon("edit", size=16),
+                    rx.icon("pencil", size=16),
                     "Edit",
                     on_click=lambda: State.open_edit_book_form(book["book_id"]),
                     size="2",
                     variant="soft",
                 ),
                 rx.button(
-                    rx.icon("trash-2", size=16),
+                    rx.icon("trash_2", size=16),
                     "Delete",
                     on_click=lambda: State.delete_book_confirm(book["book_id"]),
                     size="2",

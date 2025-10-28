@@ -161,7 +161,7 @@ def connection_status() -> rx.Component:
                 rx.heading("API Status", size="4"),
                 rx.spacer(),
                 rx.button(
-                    rx.icon("refresh-cw", size=16),
+                    rx.icon("refresh_cw", size=16),
                     "Test",
                     on_click=State.test_evolution_api,
                     variant="soft",

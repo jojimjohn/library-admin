@@ -147,7 +147,7 @@ def dashboard_page() -> rx.Component:
 
             # Refresh button
             rx.button(
-                rx.icon("refresh-cw", size=18),
+                rx.icon("refresh_cw", size=18),
                 "Refresh",
                 on_click=State.load_dashboard_data,
                 variant="soft",

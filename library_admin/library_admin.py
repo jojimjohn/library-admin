@@ -68,7 +68,7 @@ def navigation_bar() -> rx.Component:
             rx.heading("PTC Library", size="6"),
             rx.spacer(),
             rx.button(
-                rx.icon("log-out", size=18),
+                rx.icon("log_out", size=18),
                 "Logout",
                 on_click=State.logout,
                 variant="soft",

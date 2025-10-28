@@ -130,7 +130,7 @@ def loans_page_v2() -> rx.Component:
                 rx.heading("Loans", size="6"),
                 rx.badge(State.active_loans.length().to(str), variant="soft"),
                 rx.spacer(),
-                rx.icon("refresh-cw", size=16, on_click=State.load_active_loans, cursor="pointer"),
+                rx.icon("refresh_cw", size=16, on_click=State.load_active_loans, cursor="pointer"),
                 width="100%",
                 align="center",
             ),

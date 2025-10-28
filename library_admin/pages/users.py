@@ -32,7 +32,7 @@ def user_row(user: Dict) -> rx.Component:
 
             # Edit action
             rx.icon(
-                "edit",
+                "pencil",
                 size=16,
                 on_click=lambda: State.open_edit_user_form(user["user_id"]),
                 cursor="pointer",
@@ -132,7 +132,7 @@ def users_page() -> rx.Component:
                 rx.heading("Users", size="6"),
                 rx.badge(State.users.length().to(str), variant="soft"),
                 rx.spacer(),
-                rx.icon("refresh-cw", size=16, on_click=State.load_users, cursor="pointer"),
+                rx.icon("refresh_cw", size=16, on_click=State.load_users, cursor="pointer"),
                 width="100%",
                 align="center",
             ),
