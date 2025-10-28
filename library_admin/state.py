@@ -72,6 +72,11 @@ class State(rx.State):
     evolution_api_status: str = ""  # "connected", "disconnected", "testing"
     evolution_api_error: str = ""
 
+    @rx.var
+    def user_select_options(self) -> list[str]:
+        """Get formatted user options for select dropdown."""
+        return [f"{u.get('name', 'Unknown')} ({u.get('user_id', '')})" for u in self.users]
+
     # Loading states
     is_loading: bool = False
     loading_message: str = ""

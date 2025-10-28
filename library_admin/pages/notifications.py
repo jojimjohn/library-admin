@@ -54,7 +54,7 @@ def send_to_user_form() -> rx.Component:
             # User selection
             rx.text("Select User", size="2", weight="bold"),
             rx.select(
-                [f"{u.get('name', 'Unknown')} ({u.get('user_id', '')})" for u in State.users],
+                State.user_select_options,
                 placeholder="Choose a user...",
                 value=State.notify_selected_user,
                 on_change=State.set_notify_selected_user,
@@ -175,7 +175,7 @@ def connection_status() -> rx.Component:
                 State.evolution_api_status == "connected",
                 rx.callout(
                     "Evolution API is connected",
-                    icon="check-circle",
+                    icon="circle_check",
                     color_scheme="green",
                     size="1",
                 ),
@@ -184,7 +184,7 @@ def connection_status() -> rx.Component:
                 State.evolution_api_status == "disconnected",
                 rx.callout(
                     State.evolution_api_error,
-                    icon="x-circle",
+                    icon="circle_x",
                     color_scheme="red",
                     size="1",
                 ),
@@ -217,7 +217,7 @@ def notifications_page() -> rx.Component:
                 State.success_message != "",
                 rx.callout(
                     State.success_message,
-                    icon="circle-check",
+                    icon="circle_check",
                     color_scheme="green",
                     size="1",
                     on_click=State.clear_messages,
@@ -227,7 +227,7 @@ def notifications_page() -> rx.Component:
                 State.error_message != "",
                 rx.callout(
                     State.error_message,
-                    icon="circle-alert",
+                    icon="circle_alert",
                     color_scheme="red",
                     size="1",
                     on_click=State.clear_messages,

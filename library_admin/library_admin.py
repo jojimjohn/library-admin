@@ -23,7 +23,7 @@ def login_page() -> rx.Component:
                     State.auth_error != "",
                     rx.callout(
                         State.auth_error,
-                        icon="circle-alert",
+                        icon="circle_alert",
                         color_scheme="red",
                         role="alert",
                     ),

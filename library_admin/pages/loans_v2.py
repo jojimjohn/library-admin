@@ -138,7 +138,7 @@ def loans_page_v2() -> rx.Component:
             # Messages
             rx.cond(
                 State.error_message != "",
-                rx.callout(State.error_message, icon="circle-alert", color_scheme="red", size="1"),
+                rx.callout(State.error_message, icon="circle_alert", color_scheme="red", size="1"),
             ),
 
             # Search and filters

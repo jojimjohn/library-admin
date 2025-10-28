@@ -170,7 +170,7 @@ def loans_page() -> rx.Component:
                 State.success_message != "",
                 rx.callout(
                     State.success_message,
-                    icon="circle-check",
+                    icon="circle_check",
                     color_scheme="green",
                     role="status",
                     on_click=State.clear_messages,
@@ -182,7 +182,7 @@ def loans_page() -> rx.Component:
                 State.error_message != "",
                 rx.callout(
                     State.error_message,
-                    icon="circle-alert",
+                    icon="circle_alert",
                     color_scheme="red",
                     role="alert",
                     on_click=State.clear_messages,

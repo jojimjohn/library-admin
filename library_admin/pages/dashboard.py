@@ -133,7 +133,7 @@ def dashboard_page() -> rx.Component:
                 State.error_message != "",
                 rx.callout(
                     State.error_message,
-                    icon="circle-alert",
+                    icon="circle_alert",
                     color_scheme="red",
                     role="alert",
                 ),

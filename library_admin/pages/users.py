@@ -58,7 +58,7 @@ def user_form_dialog() -> rx.Component:
             rx.vstack(
                 rx.cond(
                     State.user_form_error != "",
-                    rx.callout(State.user_form_error, icon="circle-alert", color_scheme="red", size="1"),
+                    rx.callout(State.user_form_error, icon="circle_alert", color_scheme="red", size="1"),
                 ),
 
                 # Form fields
@@ -138,8 +138,8 @@ def users_page() -> rx.Component:
             ),
 
             # Messages
-            rx.cond(State.success_message != "", rx.callout(State.success_message, icon="circle-check", color_scheme="green", size="1", on_click=State.clear_messages)),
-            rx.cond(State.error_message != "", rx.callout(State.error_message, icon="circle-alert", color_scheme="red", size="1", on_click=State.clear_messages)),
+            rx.cond(State.success_message != "", rx.callout(State.success_message, icon="circle_check", color_scheme="green", size="1", on_click=State.clear_messages)),
+            rx.cond(State.error_message != "", rx.callout(State.error_message, icon="circle_alert", color_scheme="red", size="1", on_click=State.clear_messages)),
 
             # Search
             rx.input(
