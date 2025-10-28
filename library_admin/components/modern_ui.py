@@ -157,13 +157,21 @@ def action_card_modern(
     return rx.link(
         gradient_card(
             rx.vstack(
-                rx.icon(icon, size=icon_size, color=Colors.white),
-                rx.text(
-                    title,
-                    size="3",
-                    weight="bold",
-                    color=Colors.white,
+                rx.box(
+                    rx.icon(icon, size=icon_size, color=Colors.white),
+                    display="flex",
+                    justify_content="center",
+                    width="100%",
+                ),
+                rx.box(
+                    rx.text(
+                        title,
+                        size="3",
+                        weight="bold",
+                        color=Colors.white,
+                    ),
                     text_align="center",
+                    width="100%",
                 ),
                 spacing="3",
                 align="center",
@@ -411,7 +419,7 @@ def modern_page_container(
             spacing="4",
             width="100%",
         ),
-        background=Colors.light_gray,
+        background=Colors.white,  # Changed from light_gray to white for better contrast
         min_height="100vh",
         padding="4",
         padding_bottom="100px",  # Space for bottom nav

@@ -4,11 +4,11 @@ import reflex as rx
 from library_admin.state import State
 from library_admin.pages.dashboard_modern import dashboard_page
 from library_admin.pages.books_modern import books_page_modern
-from library_admin.pages.loans_v2 import loans_page_v2
-from library_admin.pages.users import users_page
-from library_admin.pages.genres import genres_page
-from library_admin.pages.notifications import notifications_page
-from library_admin.pages.settings import settings_page
+from library_admin.pages.loans_modern import loans_page_modern
+from library_admin.pages.users_modern import users_page_modern
+from library_admin.pages.genres_modern import genres_page_modern
+from library_admin.pages.notifications_modern import notifications_page_modern
+from library_admin.pages.settings_modern import settings_page_modern
 
 
 def login_page() -> rx.Component:
@@ -202,7 +202,7 @@ def index() -> rx.Component:
     )
 
 
-@rx.page(route="/books", on_load=State.load_books)
+@rx.page(route="/books", on_load=[State.load_books, State.load_genres])
 def books() -> rx.Component:
     """Books management page route."""
     State.current_page = "books"
@@ -219,7 +219,7 @@ def loans() -> rx.Component:
     State.current_page = "loans"
     return rx.cond(
         State.is_authenticated,
-        main_layout(loans_page_v2()),
+        main_layout(loans_page_modern()),
         login_page(),
     )
 
@@ -230,7 +230,7 @@ def users() -> rx.Component:
     State.current_page = "users"
     return rx.cond(
         State.is_authenticated,
-        main_layout(users_page()),
+        main_layout(users_page_modern()),
         login_page(),
     )
 
@@ -241,7 +241,7 @@ def genres() -> rx.Component:
     State.current_page = "genres"
     return rx.cond(
         State.is_authenticated,
-        main_layout(genres_page()),
+        main_layout(genres_page_modern()),
         login_page(),
     )
 
@@ -252,7 +252,7 @@ def notifications() -> rx.Component:
     State.current_page = "notifications"
     return rx.cond(
         State.is_authenticated,
-        main_layout(notifications_page()),
+        main_layout(notifications_page_modern()),
         login_page(),
     )
 
@@ -265,7 +265,7 @@ def settings() -> rx.Component:
     State.current_page = "settings"
     return rx.cond(
         State.is_authenticated,
-        main_layout(settings_page()),
+        main_layout(settings_page_modern()),
         login_page(),
     )
 
