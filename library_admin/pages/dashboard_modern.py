@@ -82,7 +82,7 @@ def stats_grid_modern() -> rx.Component:
             stat_card_modern(
                 title="Overdue Books",
                 value=State.dashboard_stats.get("overdue_books", 0).to(str),
-                icon="alert_circle",
+                icon="circle_alert",
                 gradient=f"linear-gradient(135deg, {Colors.error_red} 0%, #C62828 100%)",
             ),
             stat_card_modern(
@@ -168,7 +168,7 @@ def dashboard_page() -> rx.Component:
             State.error_message != "",
             rx.box(
                 rx.hstack(
-                    rx.icon("alert_circle", size=20, color=Colors.error_red),
+                    rx.icon("circle_alert", size=20, color=Colors.error_red),
                     rx.text(
                         State.error_message,
                         size="2",

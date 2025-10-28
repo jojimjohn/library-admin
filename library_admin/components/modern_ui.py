@@ -215,37 +215,39 @@ def modern_button(
 def section_header(
     title: str,
     subtitle: Optional[str] = None,
-    badge_value: Optional[str] = None,
+    badge_value: Any = None,
 ) -> rx.Component:
     """Modern section header with optional subtitle and badge.
 
     Args:
         title: Main heading
         subtitle: Optional subtitle text
-        badge_value: Optional badge value
+        badge_value: Optional badge value (can be Var)
     """
-    header_content = [
+    # Build header with conditional badge
+    header = rx.hstack(
         rx.text(
             title,
             size="7",
             weight="bold",
             color=Colors.dark_navy,
-        )
-    ]
-
-    if badge_value:
-        header_content.append(
+        ),
+        rx.cond(
+            badge_value,
             rx.badge(
                 badge_value,
                 color_scheme="blue",
                 size="2",
                 border_radius="12px",
-            )
-        )
+            ),
+        ),
+        spacing="2",
+        align="center",
+    )
 
     if subtitle:
         return rx.vstack(
-            rx.hstack(*header_content, spacing="2", align="center"),
+            header,
             rx.text(
                 subtitle,
                 size="2",
@@ -255,7 +257,7 @@ def section_header(
             align="start",
         )
     else:
-        return rx.hstack(*header_content, spacing="2", align="center")
+        return header
 
 
 def modern_input(

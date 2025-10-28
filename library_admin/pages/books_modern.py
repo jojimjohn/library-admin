@@ -166,7 +166,7 @@ def book_form_modern() -> rx.Component:
                     State.book_form_error != "",
                     rx.box(
                         rx.hstack(
-                            rx.icon("alert_circle", size=16, color=Colors.error_red),
+                            rx.icon("circle_alert", size=16, color=Colors.error_red),
                             rx.text(
                                 State.book_form_error,
                                 size="2",
@@ -404,7 +404,7 @@ def books_page_modern() -> rx.Component:
             State.error_message != "",
             rx.box(
                 rx.hstack(
-                    rx.icon("alert_circle", size=18, color=Colors.error_red),
+                    rx.icon("circle_alert", size=18, color=Colors.error_red),
                     rx.text(
                         State.error_message,
                         size="2",
