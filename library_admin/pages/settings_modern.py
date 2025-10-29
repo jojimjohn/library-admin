@@ -188,6 +188,7 @@ def bulk_notifications_card() -> rx.Component:
         ),
         gradient=Gradients.navy_gradient,
         padding="6",
+        align_self="center",        
     )
 
 
