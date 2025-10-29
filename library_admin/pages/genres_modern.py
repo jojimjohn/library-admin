@@ -85,7 +85,6 @@ def genre_card_modern(genre: Dict) -> rx.Component:
             width="100%",
         ),
         margin_bottom="3",
-        padding="5px",
     )
 
 

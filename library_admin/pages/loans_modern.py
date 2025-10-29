@@ -132,7 +132,6 @@ def loan_card_modern(loan: Dict) -> rx.Component:
             align="start",
         ),
         margin_bottom="3",
-        padding="5px",
     )
 
 

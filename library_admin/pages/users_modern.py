@@ -96,7 +96,6 @@ def user_card_modern(user: Dict) -> rx.Component:
             align="start",
         ),
         margin_bottom="3",
-        padding="5px",
     )
 
 
