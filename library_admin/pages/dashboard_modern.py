@@ -98,8 +98,7 @@ def stats_grid_modern() -> rx.Component:
 
         spacing="4",
         width="80%",
-        align="center",
-        justify="center",
+        align_self="center",
     )
 
 
@@ -142,7 +141,8 @@ def quick_actions_modern() -> rx.Component:
         ),
 
         spacing="3",
-        width="100%",
+        width="80%",
+        align_self="center",
     )
 
 
