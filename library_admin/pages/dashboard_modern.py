@@ -97,7 +97,7 @@ def stats_grid_modern() -> rx.Component:
         ),
 
         spacing="4",
-        width="100%",
+        width="80%",
     )
 
 

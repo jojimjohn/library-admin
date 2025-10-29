@@ -166,16 +166,16 @@ def bottom_navigation() -> rx.Component:
             justify="between",
             align="center",
             padding="2",
-            width="100%",
+            width="80%",
         ),
         background="linear-gradient(180deg, #FFFFFF 0%, #F5F7FA 100%)",
         border_top="1px solid #E0E0E0",
         box_shadow="0 -2px 8px rgba(0, 0, 0, 0.05)",
         position="fixed",
-        bottom="0",
+        bottom="10",
         left="0",
         right="0",
-        z_index="1000",
+        z_index="100000",
     )
 
 
