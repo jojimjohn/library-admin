@@ -107,6 +107,7 @@ def settings_form_card() -> rx.Component:
         ),
         gradient=Gradients.light_blue_gradient,
         padding="6",
+        align_self="center",
     )
 
 
