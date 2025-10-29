@@ -100,8 +100,10 @@ def settings_form_card() -> rx.Component:
             ),
 
             spacing="4",
-            width="100%",
+            padding="5px",
+            width="90%",
             align="stretch",
+            align_self="center",
         ),
         gradient=Gradients.light_blue_gradient,
         padding="6",
@@ -178,8 +180,10 @@ def bulk_notifications_card() -> rx.Component:
             ),
 
             spacing="4",
-            width="100%",
+            width="90%",
             align="stretch",
+            align_self="center",
+            padding="5px",
         ),
         gradient=Gradients.navy_gradient,
         padding="6",

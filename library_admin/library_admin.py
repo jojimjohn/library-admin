@@ -173,7 +173,7 @@ def bottom_navigation() -> rx.Component:
         border_top="1px solid #E0E0E0",
         box_shadow="0 -2px 8px rgba(0, 0, 0, 0.05)",
         position="fixed",
-        bottom="10px",
+        bottom="1px",
         left="0",
         right="0",
         z_index="10000",
