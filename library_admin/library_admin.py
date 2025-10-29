@@ -114,7 +114,7 @@ def navigation_bar() -> rx.Component:
         box_shadow="0 2px 8px rgba(0, 0, 0, 0.05)",
         position="sticky",
         top="0",
-        margin_left="10px",
+        padding_left="10px",
         z_index="999",
     )
 
@@ -167,7 +167,7 @@ def bottom_navigation() -> rx.Component:
             justify="between",
             align="center",
             padding="2",
-            width="80%",
+            width="100%",
         ),
         background="linear-gradient(180deg, #FFFFFF 0%, #F5F7FA 100%)",
         border_top="1px solid #E0E0E0",
