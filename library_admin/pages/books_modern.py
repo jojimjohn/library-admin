@@ -128,7 +128,6 @@ def book_card_modern(book: Dict) -> rx.Component:
             align="start",
         ),
         margin_bottom="3",
-        padding="5px",
     )
 
 
