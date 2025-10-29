@@ -70,6 +70,7 @@ def connection_status_modern() -> rx.Component:
         ),
         padding="6",
         align_self="center",   
+        width="80%",
     )
 
 
@@ -149,8 +150,10 @@ def send_to_user_card() -> rx.Component:
             ),
 
             spacing="4",
-            width="100%",
+            padding="5px",
+            width="90%",
             align="stretch",
+            align_self="center",
         ),
         gradient=Gradients.light_blue_gradient,
         padding="6",
@@ -231,8 +234,10 @@ def send_to_group_card() -> rx.Component:
             ),
 
             spacing="4",
-            width="100%",
+            width="90%",
             align="stretch",
+            align_self="center",
+            padding="5px",
         ),
         gradient=Gradients.navy_gradient,
         padding="6",
